@@ -32,8 +32,11 @@ describe("tool registry", () => {
       "image-compressor",
       "image-converter",
       "image-resizer",
+      "qr-generator",
+      "social-links",
       "thumbnail-downloader",
       "url-analyzer",
+      "url-cleaner",
       "video-to-gif",
       "video-to-thumbnail",
     ]);

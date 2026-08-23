@@ -265,7 +265,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "social",
     icon: Link2,
     href: "/tools/url-cleaner",
-    status: "coming-soon",
+    status: "available",
     keywords: ["url", "clean", "tracking", "utm"],
   },
   {
@@ -285,7 +285,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "social",
     icon: UserRoundPlus,
     href: "/tools/social-links",
-    status: "coming-soon",
+    status: "available",
     keywords: ["profile", "links", "username"],
   },
 
@@ -371,7 +371,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "utilities",
     icon: QrCode,
     href: "/tools/qr-generator",
-    status: "coming-soon",
+    status: "available",
     popular: true,
     keywords: ["qr", "code", "generate"],
   },

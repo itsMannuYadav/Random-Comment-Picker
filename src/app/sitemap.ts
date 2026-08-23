@@ -19,6 +19,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/tools/audio-converter",
     "/tools/audio-compressor",
     "/tools/audio-metadata",
+    "/tools/url-cleaner",
+    "/tools/social-links",
+    "/tools/qr-generator",
     ...TOOL_CATEGORIES.map((category) => category.href),
   ];
   return pages.map((path) => ({
