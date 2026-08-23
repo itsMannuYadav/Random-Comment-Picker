@@ -6,9 +6,9 @@ import { ChevronRight, Download, Loader2, RotateCcw } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ToolCard } from "@/components/ui/tool-card";
-import { ImageDropzone } from "@/components/tools/image-dropzone";
+import { FileDropzone } from "@/components/tools/file-dropzone";
 import { loadImageBitmap, encodeCanvas } from "@/lib/image/canvas";
-import { detectSupportedOutputFormats, formatBytes, FORMAT_LABEL, FORMAT_EXTENSION, type OutputFormat } from "@/lib/image/format";
+import { detectSupportedOutputFormats, formatBytes, FORMAT_LABEL, FORMAT_EXTENSION, MAX_IMAGE_SIZE_BYTES, type OutputFormat } from "@/lib/image/format";
 import { getRelatedTools } from "@/config/tools";
 import { CATEGORY_BY_ID } from "@/config/categories";
 
@@ -108,7 +108,7 @@ export default function ImageConverterPage() {
       </section>
 
       <section className="mx-auto max-w-3xl px-4 pb-16 sm:px-6">
-        {!file && <ImageDropzone onFile={handleFile} />}
+        {!file && <FileDropzone onFile={handleFile} accept="image/" kind="image" maxSizeBytes={MAX_IMAGE_SIZE_BYTES} />}
         {error && (
           <p className="mt-3 text-center text-sm text-muted-foreground" role="status">
             {error}

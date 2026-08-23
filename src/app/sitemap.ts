@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/tools/image-compressor",
     "/tools/image-converter",
     "/tools/image-resizer",
+    "/tools/video-to-thumbnail",
     ...TOOL_CATEGORIES.map((category) => category.href),
   ];
   return pages.map((path) => ({

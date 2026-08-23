@@ -14,6 +14,10 @@ const scriptSrc = `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV !== "
 const CSP = [
   "default-src 'self'",
   "img-src 'self' https: data: blob:",
+  // Client-side video tools preview an uploaded file via URL.createObjectURL()
+  // on a <video> element before any processing happens — same rationale as
+  // img-src's blob: addition above, just for the media-src fallback.
+  "media-src 'self' blob:",
   scriptSrc,
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self' data:",

@@ -5,26 +5,29 @@ import { UploadCloud } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { formatBytes } from "@/lib/image/format";
 
-const MAX_SIZE_BYTES = 25 * 1024 * 1024; // 25MB — generous for a browser-side canvas op, bounded against accidental huge uploads
-
-interface ImageDropzoneProps {
+interface FileDropzoneProps {
   onFile: (file: File) => void;
+  /** MIME prefix passed to the file input and used to validate the dropped/selected file, e.g. "image/" or "video/". */
+  accept: string;
+  /** Singular noun used in copy, e.g. "image" or "video". */
+  kind: string;
+  maxSizeBytes: number;
   className?: string;
 }
 
-export function ImageDropzone({ onFile, className }: ImageDropzoneProps) {
+export function FileDropzone({ onFile, accept, kind, maxSizeBytes, className }: FileDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function validateAndEmit(file: File | undefined) {
     if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      setError("That doesn't look like an image file.");
+    if (!file.type.startsWith(accept)) {
+      setError(`That doesn't look like a ${kind} file.`);
       return;
     }
-    if (file.size > MAX_SIZE_BYTES) {
-      setError(`That file is too large — the limit is ${formatBytes(MAX_SIZE_BYTES)}.`);
+    if (file.size > maxSizeBytes) {
+      setError(`That file is too large — the limit is ${formatBytes(maxSizeBytes)}.`);
       return;
     }
     setError(null);
@@ -50,12 +53,12 @@ export function ImageDropzone({ onFile, className }: ImageDropzoneProps) {
         )}
       >
         <UploadCloud className="h-8 w-8 text-muted-foreground" />
-        <p className="font-medium">Drag and drop an image, or click to browse</p>
-        <p className="text-xs text-muted-foreground">Up to {formatBytes(MAX_SIZE_BYTES)} · processed entirely in your browser</p>
+        <p className="font-medium">Drag and drop a {kind}, or click to browse</p>
+        <p className="text-xs text-muted-foreground">Up to {formatBytes(maxSizeBytes)} · processed entirely in your browser</p>
         <input
           ref={inputRef}
           type="file"
-          accept="image/*"
+          accept={`${accept}*`}
           className="sr-only"
           onChange={(e) => validateAndEmit(e.target.files?.[0])}
         />

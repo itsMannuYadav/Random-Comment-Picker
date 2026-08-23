@@ -1,5 +1,8 @@
 export type OutputFormat = "image/png" | "image/jpeg" | "image/webp" | "image/avif";
 
+// Generous for a browser-side canvas op, bounded against accidental huge uploads.
+export const MAX_IMAGE_SIZE_BYTES = 25 * 1024 * 1024;
+
 export const FORMAT_LABEL: Record<OutputFormat, string> = {
   "image/png": "PNG",
   "image/jpeg": "JPEG",

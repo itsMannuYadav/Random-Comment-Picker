@@ -159,7 +159,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "video",
     icon: Film,
     href: "/tools/video-to-thumbnail",
-    status: "coming-soon",
+    status: "available",
     keywords: ["video", "thumbnail", "frame"],
   },
   {
