@@ -17,6 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/tools/image-resizer",
     "/tools/video-to-thumbnail",
     "/tools/video-to-gif",
+    "/tools/video-downloader",
     "/tools/audio-converter",
     "/tools/audio-compressor",
     "/tools/audio-metadata",

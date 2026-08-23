@@ -29,6 +29,7 @@ import {
   Reply,
   QrCode,
   Info,
+  Download,
 } from "lucide-react";
 import { type ToolCategoryId, CATEGORY_BY_ID } from "@/config/categories";
 
@@ -201,6 +202,16 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     status: "available",
     popular: true,
     keywords: ["gif", "video", "convert"],
+  },
+  {
+    id: "video-downloader",
+    name: "Video Downloader",
+    description: "Download public video from platforms whose official API supports it.",
+    category: "video",
+    icon: Download,
+    href: "/tools/video-downloader",
+    status: "available",
+    keywords: ["download", "video", "reddit", "save"],
   },
   {
     id: "social-video-resizer",

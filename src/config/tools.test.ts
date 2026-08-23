@@ -43,6 +43,7 @@ describe("tool registry", () => {
       "title-generator",
       "url-analyzer",
       "url-cleaner",
+      "video-downloader",
       "video-to-gif",
       "video-to-thumbnail",
     ]);

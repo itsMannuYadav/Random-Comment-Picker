@@ -118,16 +118,34 @@ export async function fetchPostWithComments(
 
 /** Resolves the subreddit for a bare post ID (e.g. from a `redd.it/ID` share link). */
 export async function resolvePostSubreddit(postId: string): Promise<string> {
-  const data = await redditFetch<RedditListing<RedditPostData>>("/api/info", { id: `t3_${postId}` });
-  const subreddit = data.data.children[0]?.data.subreddit;
-  if (!subreddit) {
+  const post = await fetchPost(postId);
+  if (!post.subreddit) {
     throw new RedditApiError(
       "We couldn't find this post. It may have been deleted or made private.",
       "not-found",
       404
     );
   }
-  return subreddit;
+  return post.subreddit;
+}
+
+/**
+ * Fetches just the post itself (no comment tree) via the same `/api/info`
+ * lookup `resolvePostSubreddit` already used — one shared call site instead
+ * of two near-duplicate fetches. Used directly by video-download, which has
+ * no reason to pull thousands of comments just to read `secure_media`.
+ */
+export async function fetchPost(postId: string): Promise<RedditPostData> {
+  const data = await redditFetch<RedditListing<RedditPostData>>("/api/info", { id: `t3_${postId}` });
+  const post = data.data.children[0]?.data;
+  if (!post) {
+    throw new RedditApiError(
+      "We couldn't find this post. It may have been deleted or made private.",
+      "not-found",
+      404
+    );
+  }
+  return post;
 }
 
 /** Expands a batch of "more comments" stub IDs into real comments. */

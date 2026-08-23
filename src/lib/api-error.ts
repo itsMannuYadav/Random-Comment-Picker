@@ -75,6 +75,8 @@ function mapIntegrationKind(kind: string): ApiErrorCode {
       return "requires-connection";
     case "invalid-request":
       return "not-configured";
+    case "not-a-video":
+      return "invalid-request";
     default:
       return "unknown";
   }

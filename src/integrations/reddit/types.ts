@@ -13,6 +13,17 @@ export interface RedditThing<T> {
   data: T;
 }
 
+export interface RedditVideoData {
+  fallback_url?: string;
+  dash_url?: string;
+  hls_url?: string;
+  height?: number;
+  width?: number;
+  duration?: number;
+  is_gif?: boolean;
+  bitrate_kbps?: number;
+}
+
 export interface RedditPostData {
   id: string;
   title?: string;
@@ -22,6 +33,11 @@ export interface RedditPostData {
   thumbnail?: string;
   created_utc?: number;
   subreddit?: string;
+  is_video?: boolean;
+  // `secure_media` is the HTTPS-safe field Reddit's API prefers; `media` is
+  // the legacy fallback some older/edge-case responses still only populate.
+  secure_media?: { reddit_video?: RedditVideoData } | null;
+  media?: { reddit_video?: RedditVideoData } | null;
 }
 
 export interface RedditCommentData {
@@ -55,7 +71,7 @@ export interface RedditMoreChildrenResponse {
 export class RedditApiError extends Error {
   constructor(
     message: string,
-    public readonly kind: "not-found" | "forbidden" | "rate-limited" | "invalid-request" | "unknown",
+    public readonly kind: "not-found" | "forbidden" | "rate-limited" | "invalid-request" | "not-a-video" | "unknown",
     public readonly status: number
   ) {
     super(message);

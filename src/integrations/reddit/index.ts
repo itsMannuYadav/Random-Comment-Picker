@@ -1,11 +1,29 @@
 import "server-only";
 import type { NormalizedComment, SourceResource } from "@/types/comment";
-import { fetchMoreChildren, fetchPostWithComments, resolvePostSubreddit } from "./client";
+import type { VideoDownloadInfo } from "@/lib/video-download/types";
+import { fetchMoreChildren, fetchPost, fetchPostWithComments, resolvePostSubreddit } from "./client";
 import { mapRedditComment } from "./mapper";
+import { getRedditVideoFormats } from "./video";
 import type { RedditCommentData, RedditListing, RedditMoreData } from "./types";
 import { RedditApiError } from "./types";
 
 export { RedditApiError, resolvePostSubreddit };
+
+export async function getRedditVideoInfo(postId: string): Promise<VideoDownloadInfo> {
+  const post = await fetchPost(postId);
+  const { formats, durationSeconds } = await getRedditVideoFormats(post);
+
+  return {
+    platform: "reddit",
+    resourceId: postId,
+    sourceUrl: `https://www.reddit.com${post.permalink ?? `/comments/${postId}`}`,
+    title: post.title,
+    creatorName: post.author,
+    thumbnailUrl: post.thumbnail?.startsWith("http") ? post.thumbnail : undefined,
+    durationSeconds,
+    formats,
+  };
+}
 
 export async function getRedditResource(subreddit: string, postId: string): Promise<SourceResource> {
   const { post } = await fetchPostWithComments(subreddit, postId);
