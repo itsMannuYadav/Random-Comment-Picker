@@ -12,6 +12,6 @@ function stripTrailingSlash(url: string): string {
 }
 
 export const appConfig = {
-  name: process.env.NEXT_PUBLIC_APP_NAME || "MyCP",
+  name: process.env.NEXT_PUBLIC_APP_NAME || "MySocial",
   url: stripTrailingSlash(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
 };

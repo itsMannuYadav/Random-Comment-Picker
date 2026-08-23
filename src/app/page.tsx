@@ -3,41 +3,87 @@ import { Filter, Share2, ShieldCheck, Sparkles } from "lucide-react";
 import { UrlInput } from "@/components/home/url-input";
 import { PlatformStatusBadge } from "@/components/home/platform-status-badge";
 import { PlatformIcon } from "@/components/ui/platform-icon";
+import { ToolCard } from "@/components/ui/tool-card";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getCredentialStatus } from "@/lib/env.server";
 import { PLATFORM_STATUS } from "@/lib/platform-status";
 import { ALL_PLATFORMS, PLATFORM_LABEL } from "@/types/platform";
+import { getPopularTools } from "@/config/tools";
+import { TOOL_CATEGORIES } from "@/config/categories";
 
 export const dynamic = "force-dynamic";
 
 export default function HomePage() {
   const credentials = getCredentialStatus();
+  const popularTools = getPopularTools();
 
   return (
     <main id="main-content">
       <section className="mx-auto flex max-w-4xl flex-col items-center gap-8 px-4 pb-16 pt-20 text-center sm:px-6 sm:pt-28">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent-foreground">
-          <Sparkles className="h-3.5 w-3.5" /> Fair, verifiable random draws
+          <Sparkles className="h-3.5 w-3.5" /> Your social media toolbox
         </span>
         <h1 className="text-balance text-5xl font-bold tracking-tight sm:text-6xl">
-          Pick a winner.
+          Everything creators need,
           <br />
-          Make it fair.
+          in one place.
         </h1>
         <p className="max-w-xl text-balance text-lg text-muted-foreground">
-          Randomly select giveaway winners from YouTube, Reddit, Instagram and more — with powerful
-          filters and transparent, cryptographically verifiable draw results.
+          Pick winners, work with thumbnails, prepare media, clean URLs and more — all from one fast
+          toolkit. Start with the flagship: a fair, cryptographically verifiable comment picker.
         </p>
 
         <UrlInput />
 
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/extension">Or get the browser extension →</Link>
-        </Button>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/tools">Explore Tools</Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/extension">Or get the browser extension →</Link>
+          </Button>
+        </div>
       </section>
 
-      <section id="platforms" className="border-t border-border/70 bg-muted/30 py-16">
+      <section id="popular" className="border-t border-border/70 py-16">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold tracking-tight">Popular Tools</h2>
+            <Link href="/tools" className="text-sm font-medium text-primary hover:underline">
+              View all tools →
+            </Link>
+          </div>
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {popularTools.map((tool) => (
+              <ToolCard key={tool.id} tool={tool} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-border/70 bg-muted/30 py-16">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6">
+          <h2 className="text-center text-2xl font-bold tracking-tight">Browse by category</h2>
+          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {TOOL_CATEGORIES.map((category) => {
+              const Icon = category.icon;
+              return (
+                <Link key={category.id} href={category.href}>
+                  <Card className="flex h-full flex-col items-center gap-3 p-5 text-center transition-colors hover:border-primary/40 hover:bg-muted/40">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <p className="font-semibold">{category.label}</p>
+                  </Card>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section id="platforms" className="border-t border-border/70 py-16">
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
           <h2 className="text-center text-2xl font-bold tracking-tight">Works with the platforms you use.</h2>
           <p className="mx-auto mt-2 max-w-md text-center text-sm text-muted-foreground">
