@@ -29,6 +29,7 @@ export function getCredentialStatus() {
     youtube: checkVars(["YOUTUBE_API_KEY"]),
     reddit: checkVars(["REDDIT_CLIENT_ID", "REDDIT_CLIENT_SECRET"]),
     instagram: checkVars(["INSTAGRAM_CLIENT_ID", "INSTAGRAM_CLIENT_SECRET"]),
+    ai: checkVars(["AI_PROVIDER_API_KEY"]),
   } as const;
 }
 

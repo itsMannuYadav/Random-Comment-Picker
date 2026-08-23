@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { TOOL_REGISTRY, getPopularTools, getRelatedTools, getToolsByCategory, searchTools } from "@/config/tools";
+import { TOOL_REGISTRY, getPopularTools, getRelatedTools, getToolsByCategory, isToolOpenable, searchTools } from "@/config/tools";
 import { TOOL_CATEGORIES } from "@/config/categories";
 
 const categoryIds = new Set(TOOL_CATEGORIES.map((category) => category.id));
@@ -40,6 +40,30 @@ describe("tool registry", () => {
       "video-to-gif",
       "video-to-thumbnail",
     ]);
+  });
+
+  it("marks exactly the AI generators as requires-connection", () => {
+    const gated = TOOL_REGISTRY.filter((tool) => tool.status === "requires-connection");
+    expect(gated.map((tool) => tool.id).sort()).toEqual([
+      "caption-generator",
+      "comment-reply-generator",
+      "description-generator",
+      "hashtag-generator",
+      "hook-generator",
+      "title-generator",
+    ]);
+  });
+});
+
+describe("isToolOpenable", () => {
+  it("treats available, beta and requires-connection as openable", () => {
+    expect(isToolOpenable("available")).toBe(true);
+    expect(isToolOpenable("beta")).toBe(true);
+    expect(isToolOpenable("requires-connection")).toBe(true);
+  });
+
+  it("treats coming-soon as not openable", () => {
+    expect(isToolOpenable("coming-soon")).toBe(false);
   });
 });
 

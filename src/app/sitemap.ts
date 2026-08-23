@@ -22,6 +22,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/tools/url-cleaner",
     "/tools/social-links",
     "/tools/qr-generator",
+    "/tools/caption-generator",
+    "/tools/title-generator",
+    "/tools/hashtag-generator",
+    "/tools/hook-generator",
+    "/tools/description-generator",
+    "/tools/comment-reply-generator",
     ...TOOL_CATEGORIES.map((category) => category.href),
   ];
   return pages.map((path) => ({

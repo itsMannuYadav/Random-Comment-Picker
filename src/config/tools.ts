@@ -27,13 +27,12 @@ import {
   Anchor,
   AlignLeft,
   Reply,
-  Bot,
   QrCode,
   Info,
 } from "lucide-react";
 import { type ToolCategoryId, CATEGORY_BY_ID } from "@/config/categories";
 
-export type ToolStatus = "available" | "beta" | "coming-soon";
+export type ToolStatus = "available" | "beta" | "requires-connection" | "coming-soon";
 
 export interface ToolDefinition {
   id: string;
@@ -297,7 +296,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "creator",
     icon: Captions,
     href: "/tools/caption-generator",
-    status: "coming-soon",
+    status: "requires-connection",
     keywords: ["caption", "ai", "social"],
   },
   {
@@ -307,7 +306,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "creator",
     icon: Type,
     href: "/tools/title-generator",
-    status: "coming-soon",
+    status: "requires-connection",
     keywords: ["title", "youtube", "ai"],
   },
   {
@@ -317,7 +316,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "creator",
     icon: Hash,
     href: "/tools/hashtag-generator",
-    status: "coming-soon",
+    status: "requires-connection",
     keywords: ["hashtag", "social", "ai"],
   },
   {
@@ -327,7 +326,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "creator",
     icon: Anchor,
     href: "/tools/hook-generator",
-    status: "coming-soon",
+    status: "requires-connection",
     keywords: ["hook", "script", "ai"],
   },
   {
@@ -337,7 +336,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "creator",
     icon: AlignLeft,
     href: "/tools/description-generator",
-    status: "coming-soon",
+    status: "requires-connection",
     keywords: ["description", "youtube", "ai"],
   },
   {
@@ -347,20 +346,8 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "creator",
     icon: Reply,
     href: "/tools/comment-reply-generator",
-    status: "coming-soon",
+    status: "requires-connection",
     keywords: ["reply", "comment", "ai"],
-  },
-
-  // AI
-  {
-    id: "ai-tools",
-    name: "AI Creator Tools",
-    description: "Provider-agnostic AI tools for captions, titles and more.",
-    category: "ai",
-    icon: Bot,
-    href: "/tools/ai",
-    status: "coming-soon",
-    keywords: ["ai", "generate"],
   },
 
   // Utilities
@@ -386,6 +373,11 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     keywords: ["file", "metadata", "info"],
   },
 ];
+
+/** A tool page is real and worth linking to once it has any actual behavior behind it — including an honest "requires connection" state. */
+export function isToolOpenable(status: ToolStatus): boolean {
+  return status === "available" || status === "beta" || status === "requires-connection";
+}
 
 export function getToolById(id: string): ToolDefinition | undefined {
   return TOOL_REGISTRY.find((tool) => tool.id === id);

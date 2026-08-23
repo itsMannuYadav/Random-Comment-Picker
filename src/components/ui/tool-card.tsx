@@ -3,10 +3,10 @@ import { ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { cn } from "@/lib/cn";
-import type { ToolDefinition } from "@/config/tools";
+import { isToolOpenable, type ToolDefinition } from "@/config/tools";
 
 export function ToolCard({ tool, className }: { tool: ToolDefinition; className?: string }) {
-  const isOpenable = tool.status === "available" || tool.status === "beta";
+  const isOpenable = isToolOpenable(tool.status);
   const Icon = tool.icon;
 
   const content = (

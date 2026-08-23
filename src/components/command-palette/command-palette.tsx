@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { useRouter } from "next/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Search } from "lucide-react";
-import { searchTools } from "@/config/tools";
+import { searchTools, isToolOpenable } from "@/config/tools";
 import { CATEGORY_BY_ID } from "@/config/categories";
 import { StatusBadge } from "@/components/ui/status-badge";
 
@@ -91,7 +91,7 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
               ) : (
                 results.map((tool) => {
                   const Icon = tool.icon;
-                  const isOpenable = tool.status === "available" || tool.status === "beta";
+                  const isOpenable = isToolOpenable(tool.status);
                   return (
                     <button
                       key={tool.id}

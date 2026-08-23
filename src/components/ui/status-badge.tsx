@@ -4,6 +4,7 @@ import type { ToolStatus } from "@/config/tools";
 const STATUS_META: Record<ToolStatus, { label: string; variant: "success" | "warning" | "neutral" }> = {
   available: { label: "Live", variant: "success" },
   beta: { label: "Beta", variant: "warning" },
+  "requires-connection": { label: "Requires API access", variant: "warning" },
   "coming-soon": { label: "Coming soon", variant: "neutral" },
 };
 

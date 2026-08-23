@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
-import { searchTools } from "@/config/tools";
+import { searchTools, isToolOpenable } from "@/config/tools";
 import { CATEGORY_BY_ID } from "@/config/categories";
 import { StatusBadge } from "@/components/ui/status-badge";
 
@@ -45,7 +45,7 @@ export function ToolSearch({ className }: { className?: string }) {
             ) : (
               results.map((tool) => {
                 const Icon = tool.icon;
-                const isOpenable = tool.status === "available" || tool.status === "beta";
+                const isOpenable = isToolOpenable(tool.status);
                 const row = (
                   <span className="flex items-center gap-3 rounded-lg px-3 py-2 text-left">
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
