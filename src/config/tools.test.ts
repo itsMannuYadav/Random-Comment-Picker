@@ -24,7 +24,11 @@ describe("tool registry", () => {
 
   it("marks exactly the tools that actually work as available", () => {
     const available = TOOL_REGISTRY.filter((tool) => tool.status === "available");
-    expect(available.map((tool) => tool.id).sort()).toEqual(["comment-picker", "thumbnail-downloader"]);
+    expect(available.map((tool) => tool.id).sort()).toEqual([
+      "comment-picker",
+      "thumbnail-downloader",
+      "url-analyzer",
+    ]);
   });
 });
 

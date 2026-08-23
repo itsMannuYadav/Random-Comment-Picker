@@ -254,7 +254,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "social",
     icon: FileSearch,
     href: "/tools/url-analyzer",
-    status: "coming-soon",
+    status: "available",
     popular: true,
     keywords: ["url", "analyze", "metadata"],
   },
