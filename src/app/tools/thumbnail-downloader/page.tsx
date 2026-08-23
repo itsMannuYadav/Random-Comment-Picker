@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { Suspense, useEffect, useState, useTransition } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ChevronRight, Copy, Download, ExternalLink, ImageDown, Link2, Loader2, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,7 +37,8 @@ function aspectRatioLabel(width: number, height: number): string {
 
 const related = getRelatedTools("thumbnail-downloader");
 
-export default function ThumbnailDownloaderPage() {
+function ThumbnailDownloaderPageInner() {
+  const searchParams = useSearchParams();
   const [value, setValue] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -50,12 +52,10 @@ export default function ThumbnailDownloaderPage() {
     });
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!value.trim()) return;
+  function analyze(rawUrl: string) {
     setNotice(null);
 
-    const parsed = parseYouTubeUrl(value.trim());
+    const parsed = parseYouTubeUrl(rawUrl.trim());
     if (!parsed) {
       setNotice("Paste a YouTube video, Shorts, or youtu.be link.");
       return;
@@ -71,6 +71,23 @@ export default function ThumbnailDownloaderPage() {
       }
     });
   }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!value.trim()) return;
+    analyze(value);
+  }
+
+  useEffect(() => {
+    const prefill = searchParams.get("url");
+    if (!prefill) return;
+    queueMicrotask(() => {
+      setValue(prefill);
+      analyze(prefill);
+    });
+    // Only ever run once for the URL this page loaded with — not on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <main id="main-content">
@@ -199,5 +216,13 @@ export default function ThumbnailDownloaderPage() {
         </section>
       )}
     </main>
+  );
+}
+
+export default function ThumbnailDownloaderPage() {
+  return (
+    <Suspense fallback={null}>
+      <ThumbnailDownloaderPageInner />
+    </Suspense>
   );
 }

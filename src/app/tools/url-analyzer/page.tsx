@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ChevronRight, Link2, Loader2, Search, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,7 +42,8 @@ const PLATFORM_TOOL_IDS: Partial<Record<Platform, string[]>> = {
   instagram: ["comment-picker"],
 };
 
-export default function UrlAnalyzerPage() {
+function UrlAnalyzerPageInner() {
+  const searchParams = useSearchParams();
   const [value, setValue] = useState("");
   const [stage, setStage] = useState<Stage>("idle");
   const [statusLabel, setStatusLabel] = useState<string | null>(null);
@@ -50,10 +52,7 @@ export default function UrlAnalyzerPage() {
   const [resourceError, setResourceError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!value.trim()) return;
-
+  async function analyze(rawUrl: string) {
     setNotice(null);
     setResource(null);
     setResourceError(null);
@@ -65,7 +64,7 @@ export default function UrlAnalyzerPage() {
       const det = await apiFetch<DetectResponse>("/api/platform/detect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: value.trim() }),
+        body: JSON.stringify({ url: rawUrl.trim() }),
       });
 
       if (det.platform === "unknown" || !det.resourceId) {
@@ -94,6 +93,23 @@ export default function UrlAnalyzerPage() {
       setNotice("Something went wrong checking that URL. Please try again.");
     }
   }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!value.trim()) return;
+    analyze(value);
+  }
+
+  useEffect(() => {
+    const prefill = searchParams.get("url");
+    if (!prefill) return;
+    queueMicrotask(() => {
+      setValue(prefill);
+      analyze(prefill);
+    });
+    // Only ever run once for the URL this page loaded with — not on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const relatedToolIds = detected && detected.platform !== "unknown" ? PLATFORM_TOOL_IDS[detected.platform] ?? [] : [];
   const pickerPrefix = detected && detected.platform !== "unknown" ? PICKER_PREFIX[detected.platform] : undefined;
@@ -260,5 +276,13 @@ export default function UrlAnalyzerPage() {
         </section>
       )}
     </main>
+  );
+}
+
+export default function UrlAnalyzerPage() {
+  return (
+    <Suspense fallback={null}>
+      <UrlAnalyzerPageInner />
+    </Suspense>
   );
 }

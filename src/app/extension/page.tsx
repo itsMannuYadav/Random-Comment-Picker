@@ -10,11 +10,11 @@ export const metadata: Metadata = {
 };
 
 const STEPS = [
-  "Download or clone the MyCP repository.",
+  "Download or clone the MySocial repository.",
   'Open chrome://extensions (or edge://extensions in Edge).',
   'Enable "Developer mode" (top-right toggle).',
   'Click "Load unpacked" and select the /extension folder.',
-  "Pin the MyCP icon to your toolbar for quick access.",
+  "Pin the MySocial icon to your toolbar for quick access.",
 ];
 
 export default function ExtensionPage() {
@@ -23,19 +23,21 @@ export default function ExtensionPage() {
       <div className="flex flex-col gap-8">
         <div className="text-center">
           <Badge variant="warning">Not yet published to the Chrome/Edge stores</Badge>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight">MyCP Browser Extension</h1>
+          <h1 className="mt-4 text-3xl font-bold tracking-tight">MySocial Browser Extension</h1>
           <p className="mt-3 text-muted-foreground">
-            Pick winners faster. Detect supported social posts directly from your browser and jump
-            straight into the picker.
+            Detect supported social posts directly from your browser and jump straight into the
+            right MySocial tool.
           </p>
         </div>
 
         <Card className="p-6">
           <h2 className="font-semibold">What it does</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            While you&rsquo;re watching a YouTube video or reading a Reddit post, the extension detects
-            the page and shows an &ldquo;Open in MyCP&rdquo; button — it never reads comments itself or
-            holds any API credentials. It just opens the matching MyCP URL.
+            While you&rsquo;re on a supported YouTube, Reddit or Instagram page, the extension detects
+            it and offers one-click actions — &ldquo;Pick with MySocial&rdquo;, &ldquo;Get
+            Thumbnail&rdquo; (YouTube) and &ldquo;Analyze&rdquo; — that open the matching MySocial
+            tool pre-filled with that page&rsquo;s URL. It never reads comments itself or holds any
+            API credentials; it just opens a MySocial URL.
           </p>
         </Card>
 
@@ -60,7 +62,7 @@ export default function ExtensionPage() {
         <Card className="p-6">
           <h2 className="font-semibold">Supported today</h2>
           <ul className="mt-3 flex flex-col gap-2 text-sm">
-            {["youtube.com/watch, /shorts, youtu.be", "reddit.com/r/*/comments/*"].map((pattern) => (
+            {["youtube.com/watch, /shorts, youtu.be", "reddit.com/r/*/comments/*", "instagram.com/p, /reel, /tv"].map((pattern) => (
               <li key={pattern} className="flex items-center gap-2 text-muted-foreground">
                 <CheckCircle2 className="h-4 w-4 text-success" /> <code className="font-mono">{pattern}</code>
               </li>

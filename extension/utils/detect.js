@@ -1,11 +1,12 @@
 // Minimal, dependency-free mirror of the URL detection logic in
 // src/integrations/*/parser.ts — kept intentionally small since the
-// extension only offers "Pick with MyCP" for platforms that are actually
-// implemented (see planning doc section 32). Update this alongside the
-// website's parsers when a new platform ships.
+// extension only offers actions for platforms that are actually
+// implemented on the website. Update this alongside the website's parsers
+// when a new platform ships.
 
 const YOUTUBE_HOSTS = new Set(["youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be"]);
 const REDDIT_HOSTS = new Set(["reddit.com", "www.reddit.com", "old.reddit.com", "new.reddit.com", "np.reddit.com"]);
+const INSTAGRAM_HOSTS = new Set(["instagram.com", "www.instagram.com"]);
 
 function detectYouTube(url) {
   if (!YOUTUBE_HOSTS.has(url.hostname.toLowerCase())) return null;
@@ -36,6 +37,17 @@ function detectReddit(url) {
   return { platform: "reddit", resourceId: postId, prefix: "r" };
 }
 
+function detectInstagram(url) {
+  if (!INSTAGRAM_HOSTS.has(url.hostname.toLowerCase())) return null;
+
+  const segments = url.pathname.split("/").filter(Boolean);
+  const [type, code] = segments;
+  if ((type === "p" || type === "reel" || type === "tv") && code && /^[A-Za-z0-9_-]+$/.test(code)) {
+    return { platform: "instagram", resourceId: code, prefix: "i" };
+  }
+  return null;
+}
+
 /** Returns `{ platform, resourceId, prefix }` for a supported URL, or null. */
 function detectSupportedUrl(href) {
   let url;
@@ -44,5 +56,5 @@ function detectSupportedUrl(href) {
   } catch {
     return null;
   }
-  return detectYouTube(url) || detectReddit(url);
+  return detectYouTube(url) || detectReddit(url) || detectInstagram(url);
 }

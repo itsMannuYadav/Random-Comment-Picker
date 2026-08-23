@@ -34,6 +34,9 @@ body {
 }
 
 #content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   padding: 16px;
 }
 
@@ -48,7 +51,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-bottom: 14px;
+  margin-bottom: 6px;
 }
 
 .platform-tag {
@@ -85,4 +88,20 @@ button.primary {
 
 button.primary:hover {
   filter: brightness(1.05);
+}
+
+button.secondary {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+button.secondary:hover {
+  background: rgba(28, 24, 21, 0.04);
 }

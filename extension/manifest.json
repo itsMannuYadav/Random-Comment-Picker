@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "MyCP — Random Comment Picker",
-  "short_name": "MyCP",
-  "version": "0.1.0",
-  "description": "Detect supported YouTube and Reddit posts and jump straight into the MyCP comment picker.",
+  "name": "MySocial — Social Media Toolbox",
+  "short_name": "MySocial",
+  "version": "0.2.0",
+  "description": "Detect supported YouTube, Reddit and Instagram pages and jump straight into the right MySocial tool.",
   "action": {
     "default_popup": "popup/popup.html",
-    "default_title": "MyCP — Random Comment Picker"
+    "default_title": "MySocial"
   },
   "icons": {
     "16": "icons/icon16.png",
