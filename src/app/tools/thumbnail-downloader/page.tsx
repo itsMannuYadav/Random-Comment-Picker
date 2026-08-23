@@ -1,0 +1,203 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import Link from "next/link";
+import { ChevronRight, Copy, Download, ExternalLink, ImageDown, Link2, Loader2, X } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ToolCard } from "@/components/ui/tool-card";
+import { parseYouTubeUrl } from "@/integrations/youtube/parser";
+import { apiFetch, ClientApiError } from "@/lib/api-client";
+import { getRelatedTools } from "@/config/tools";
+import { CATEGORY_BY_ID } from "@/config/categories";
+
+interface ThumbnailOption {
+  key: "default" | "medium" | "high" | "standard" | "maxres";
+  label: string;
+  url: string;
+  width: number;
+  height: number;
+}
+
+interface ThumbnailInfo {
+  videoId: string;
+  title?: string;
+  thumbnails: ThumbnailOption[];
+}
+
+function gcd(a: number, b: number): number {
+  return b === 0 ? a : gcd(b, a % b);
+}
+
+function aspectRatioLabel(width: number, height: number): string {
+  const divisor = gcd(width, height) || 1;
+  return `${width / divisor}:${height / divisor}`;
+}
+
+const related = getRelatedTools("thumbnail-downloader");
+
+export default function ThumbnailDownloaderPage() {
+  const [value, setValue] = useState("");
+  const [notice, setNotice] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+  const [info, setInfo] = useState<ThumbnailInfo | null>(null);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  function copyUrl(url: string, key: string) {
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey((current) => (current === key ? null : current)), 1500);
+    });
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!value.trim()) return;
+    setNotice(null);
+
+    const parsed = parseYouTubeUrl(value.trim());
+    if (!parsed) {
+      setNotice("Paste a YouTube video, Shorts, or youtu.be link.");
+      return;
+    }
+
+    startTransition(async () => {
+      try {
+        const result = await apiFetch<ThumbnailInfo>(`/api/youtube/thumbnails?videoId=${parsed.videoId}`);
+        setInfo(result);
+      } catch (err) {
+        setInfo(null);
+        setNotice(err instanceof ClientApiError ? err.message : "Something went wrong fetching that video's thumbnails.");
+      }
+    });
+  }
+
+  return (
+    <main id="main-content">
+      <nav aria-label="Breadcrumb" className="mx-auto flex max-w-3xl items-center gap-1.5 px-4 pt-8 text-xs text-muted-foreground sm:px-6">
+        <Link href="/" className="hover:text-foreground">
+          Home
+        </Link>
+        <ChevronRight className="h-3 w-3" />
+        <Link href="/tools" className="hover:text-foreground">
+          Tools
+        </Link>
+        <ChevronRight className="h-3 w-3" />
+        <Link href={CATEGORY_BY_ID.images.href} className="hover:text-foreground">
+          Images
+        </Link>
+        <ChevronRight className="h-3 w-3" />
+        <span className="text-foreground">Thumbnail Downloader</span>
+      </nav>
+
+      <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 pb-10 pt-8 text-center sm:px-6">
+        <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">Thumbnail Downloader</h1>
+        <p className="max-w-xl text-balance text-muted-foreground">
+          Download the highest available thumbnail from a YouTube video — every resolution actually
+          confirmed available for that video via the official API, nothing guessed.
+        </p>
+
+        <div className="mx-auto w-full max-w-2xl">
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 shadow-lg shadow-black/[0.03] sm:flex-row sm:items-center"
+          >
+            <div className="flex flex-1 items-center gap-3 px-3 py-2">
+              <Link2 className="h-5 w-5 shrink-0 text-muted-foreground" />
+              <input
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                placeholder="Paste a YouTube video URL"
+                className="w-full bg-transparent text-base outline-none placeholder:text-muted-foreground"
+                aria-label="YouTube video URL"
+              />
+              {value && (
+                <button type="button" onClick={() => setValue("")} aria-label="Clear" className="text-muted-foreground hover:text-foreground">
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            <Button type="submit" size="lg" disabled={pending || !value.trim()} className="w-full sm:w-auto">
+              {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageDown className="h-4 w-4" />}
+              Get Thumbnail
+            </Button>
+          </form>
+
+          {notice && (
+            <p className="mt-3 text-center text-sm text-muted-foreground" role="status">
+              {notice}
+            </p>
+          )}
+        </div>
+      </section>
+
+      {info && (
+        <section className="mx-auto max-w-3xl px-4 pb-16 sm:px-6">
+          {info.title && <p className="mb-4 truncate text-center text-sm text-muted-foreground">{info.title}</p>}
+
+          <div className="flex flex-col gap-4">
+            {info.thumbnails.map((thumb, i) => (
+              <Card key={thumb.key} className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={thumb.url}
+                  alt={`${thumb.label} resolution thumbnail`}
+                  className="h-24 w-auto shrink-0 self-center rounded-lg border border-border object-cover sm:h-20"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="flex items-center gap-2 font-semibold">
+                    {thumb.label}
+                    {i === 0 && (
+                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-primary">
+                        Best available
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {thumb.width}×{thumb.height} · {aspectRatioLabel(thumb.width, thumb.height)} · JPG
+                  </p>
+                </div>
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  <a
+                    href={`/api/youtube/thumbnail-file?videoId=${info.videoId}&key=${thumb.key}`}
+                    className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:brightness-105"
+                  >
+                    <Download className="h-3.5 w-3.5" /> Download
+                  </a>
+                  <a
+                    href={thumb.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border px-4 text-sm font-medium hover:bg-muted"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" /> Open
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => copyUrl(thumb.url, thumb.key)}
+                    className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border px-4 text-sm font-medium hover:bg-muted"
+                  >
+                    <Copy className="h-3.5 w-3.5" /> {copiedKey === thumb.key ? "Copied!" : "Copy URL"}
+                  </button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {related.length > 0 && (
+        <section className="border-t border-border/70 bg-muted/30 py-14">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6">
+            <h2 className="text-xl font-bold tracking-tight">You may also like</h2>
+            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {related.map((tool) => (
+                <ToolCard key={tool.id} tool={tool} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+    </main>
+  );
+}

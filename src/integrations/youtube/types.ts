@@ -4,13 +4,33 @@ export interface YouTubeVideoListResponse {
   items: YouTubeVideoResource[];
 }
 
+export interface YouTubeThumbnail {
+  url?: string;
+  width?: number;
+  height?: number;
+}
+
+/**
+ * The API only includes keys that actually exist for a given video — e.g.
+ * `maxres` is absent for videos never uploaded in HD. Never assume a key is
+ * present; that absence is the authoritative signal for "not available",
+ * not something to guess at by probing the CDN.
+ */
+export interface YouTubeThumbnails {
+  default?: YouTubeThumbnail;
+  medium?: YouTubeThumbnail;
+  high?: YouTubeThumbnail;
+  standard?: YouTubeThumbnail;
+  maxres?: YouTubeThumbnail;
+}
+
 export interface YouTubeVideoResource {
   id: string;
   snippet?: {
     title?: string;
     channelTitle?: string;
     channelId?: string;
-    thumbnails?: { medium?: { url?: string }; default?: { url?: string } };
+    thumbnails?: YouTubeThumbnails;
   };
   statistics?: {
     commentCount?: string;

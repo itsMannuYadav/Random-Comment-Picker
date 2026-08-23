@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/extension",
     "/tools",
     "/tools/comment-picker",
+    "/tools/thumbnail-downloader",
     ...TOOL_CATEGORIES.map((category) => category.href),
   ];
   return pages.map((path) => ({

@@ -2,9 +2,82 @@ import "server-only";
 import type { FetchCommentsPage, SourceResource } from "@/types/comment";
 import { fetchAllRepliesForThread, fetchCommentThreadsPage, fetchVideoResource } from "./client";
 import { mapReplies, mapTopLevelComment } from "./mapper";
-import { YouTubeApiError } from "./types";
+import { YouTubeApiError, type YouTubeThumbnails } from "./types";
 
 export { YouTubeApiError };
+
+export type ThumbnailKey = "default" | "medium" | "high" | "standard" | "maxres";
+
+export interface ThumbnailOption {
+  key: ThumbnailKey;
+  label: string;
+  url: string;
+  width: number;
+  height: number;
+}
+
+export interface YouTubeThumbnailInfo {
+  videoId: string;
+  title?: string;
+  thumbnails: ThumbnailOption[];
+}
+
+const THUMBNAIL_LABELS: Record<ThumbnailKey, string> = {
+  default: "Default",
+  medium: "Medium",
+  high: "High",
+  standard: "Standard",
+  maxres: "Maximum available",
+};
+
+/**
+ * The stable, publicly documented filenames behind `i.ytimg.com/vi/{id}/...`
+ * — the same host+path convention the Data API's own thumbnail URLs use.
+ * Only used to re-fetch a resolution the API has already confirmed exists
+ * for this video; never used to guess at availability (the CDN silently
+ * serves a placeholder for a missing resolution instead of 404ing).
+ */
+const THUMBNAIL_FILENAMES: Record<ThumbnailKey, string> = {
+  default: "default.jpg",
+  medium: "mqdefault.jpg",
+  high: "hqdefault.jpg",
+  standard: "sddefault.jpg",
+  maxres: "maxresdefault.jpg",
+};
+
+export function youtubeThumbnailCdnUrl(videoId: string, key: ThumbnailKey): string {
+  return `https://i.ytimg.com/vi/${videoId}/${THUMBNAIL_FILENAMES[key]}`;
+}
+
+// Largest first, so callers can treat thumbnails[0] as "the" preview image.
+const THUMBNAIL_KEY_ORDER: ThumbnailKey[] = ["maxres", "standard", "high", "medium", "default"];
+
+export async function getYouTubeThumbnails(videoId: string): Promise<YouTubeThumbnailInfo> {
+  const video = await fetchVideoResource(videoId);
+
+  if (video.status?.privacyStatus === "private") {
+    throw new YouTubeApiError(
+      "We couldn't find this video. It may have been deleted or made private.",
+      "not-found",
+      404
+    );
+  }
+
+  const raw: YouTubeThumbnails = video.snippet?.thumbnails ?? {};
+  const thumbnails: ThumbnailOption[] = [];
+  for (const key of THUMBNAIL_KEY_ORDER) {
+    const t = raw[key];
+    if (t?.url && t.width && t.height) {
+      thumbnails.push({ key, label: THUMBNAIL_LABELS[key], url: t.url, width: t.width, height: t.height });
+    }
+  }
+
+  if (thumbnails.length === 0) {
+    throw new YouTubeApiError("No thumbnail is available for this video.", "not-found", 404);
+  }
+
+  return { videoId, title: video.snippet?.title, thumbnails };
+}
 
 export async function getYouTubeResource(videoId: string): Promise<SourceResource> {
   const video = await fetchVideoResource(videoId);

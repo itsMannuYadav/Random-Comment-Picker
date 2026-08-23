@@ -95,7 +95,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "images",
     icon: ImageDown,
     href: "/tools/thumbnail-downloader",
-    status: "coming-soon",
+    status: "available",
     popular: true,
     keywords: ["thumbnail", "youtube", "download", "image"],
   },
