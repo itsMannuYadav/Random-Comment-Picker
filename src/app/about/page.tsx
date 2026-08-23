@@ -25,6 +25,7 @@ export default function AboutPage() {
           MyCP is under active development. Platform support expands as official APIs make it possible —
           see the platform status on the homepage for what&rsquo;s live today.
         </p>
+        <p className="text-sm text-muted-foreground">Built by Mannu Yadav.</p>
       </div>
     </PageShell>
   );

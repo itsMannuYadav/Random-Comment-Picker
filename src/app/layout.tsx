@@ -23,6 +23,8 @@ export const metadata: Metadata = {
   },
   description:
     "Randomly select fair, transparent giveaway winners from YouTube, Reddit, Instagram and more — with powerful filters and verifiable draw results.",
+  authors: [{ name: "Mannu Yadav", url: appConfig.url }],
+  creator: "Mannu Yadav",
   openGraph: {
     title: `${appConfig.name} — Random Comment Picker for Giveaways`,
     description: "Pick a winner. Make it fair.",

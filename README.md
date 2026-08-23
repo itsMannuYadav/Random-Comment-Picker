@@ -1,5 +1,7 @@
 # MyCP — My Comment Picker
 
+Created by [Mannu Yadav](https://mycp.mannuyadav.me).
+
 A fair, transparent random comment picker for giveaways. Paste a YouTube or
 Reddit URL, filter the comments, and run a cryptographically secure draw
 with a publicly verifiable result page.
