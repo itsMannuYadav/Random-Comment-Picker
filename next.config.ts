@@ -9,7 +9,13 @@ import type { NextConfig } from "next";
 // app to load scripts, styles, or connect out to anywhere else.
 // 'unsafe-eval' is dev-only: React's dev-mode debugging (stack trace
 // reconstruction) uses eval() and never runs in production builds.
-const scriptSrc = `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV !== "production" ? " 'unsafe-eval'" : ""}`;
+// 'wasm-unsafe-eval' (narrower than 'unsafe-eval' — only permits WebAssembly
+// compilation, not general eval()) and blob: are both required by
+// ffmpeg.wasm: it self-hosts its core from /ffmpeg/ (same-origin, copied
+// from the @ffmpeg/core package by scripts/copy-ffmpeg-core.mjs) but loads
+// it through a blob: URL internally, which is the officially documented
+// loading pattern regardless of hosting origin.
+const scriptSrc = `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:${process.env.NODE_ENV !== "production" ? " 'unsafe-eval'" : ""}`;
 
 const CSP = [
   "default-src 'self'",
@@ -19,6 +25,8 @@ const CSP = [
   // img-src's blob: addition above, just for the media-src fallback.
   "media-src 'self' blob:",
   scriptSrc,
+  // ffmpeg.wasm's worker is instantiated from a blob: URL.
+  "worker-src 'self' blob:",
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self' data:",
   "connect-src 'self'",

@@ -31,6 +31,7 @@ describe("tool registry", () => {
       "image-resizer",
       "thumbnail-downloader",
       "url-analyzer",
+      "video-to-gif",
       "video-to-thumbnail",
     ]);
   });

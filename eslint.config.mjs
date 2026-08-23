@@ -15,6 +15,9 @@ const eslintConfig = defineConfig([
     // The browser extension is a separate, non-module classic-script
     // codebase (see extension/README) — not part of the Next.js app.
     "extension/**",
+    // Build artifact copied from @ffmpeg/core by scripts/copy-ffmpeg-core.mjs
+    // (see .gitignore), not source code.
+    "public/ffmpeg/**",
   ]),
 ]);
 

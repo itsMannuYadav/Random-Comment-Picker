@@ -199,7 +199,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "video",
     icon: Film,
     href: "/tools/video-to-gif",
-    status: "coming-soon",
+    status: "available",
     popular: true,
     keywords: ["gif", "video", "convert"],
   },
