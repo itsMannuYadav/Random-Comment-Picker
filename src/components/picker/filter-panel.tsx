@@ -27,12 +27,40 @@ function Checkbox({ checked, onChange, label, icon: Icon }: { checked: boolean; 
   );
 }
 
+const DEFAULT_FILTERS: DrawFilters = { excludeEmpty: true };
+
+function countAdvancedFilters(filters: DrawFilters): number {
+  let count = 0;
+  if (filters.after || filters.before) count++;
+  if (filters.minLength !== undefined || filters.maxLength !== undefined) count++;
+  if (filters.replyMode && filters.replyMode !== "include") count++;
+  if (filters.blockedWords && filters.blockedWords.length > 0) count++;
+  return count;
+}
+
 export function FilterPanel({ filters, onChange, steps }: FilterPanelProps) {
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const set = <K extends keyof DrawFilters>(key: K, value: DrawFilters[K]) => onChange({ ...filters, [key]: value });
+  const advancedCount = countAdvancedFilters(filters);
+  const hasAnyFilter =
+    Boolean(filters.onePerPerson || filters.removeDuplicateComments || filters.excludeLinks || filters.keyword || filters.hashtag) ||
+    advancedCount > 0;
 
   return (
     <Card className="flex flex-col gap-6 p-6">
+      <div className="flex items-center justify-between">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Filters</h3>
+        {hasAnyFilter && (
+          <button
+            type="button"
+            onClick={() => onChange(DEFAULT_FILTERS)}
+            className="text-xs font-medium text-primary hover:underline"
+          >
+            Reset
+          </button>
+        )}
+      </div>
+
       <div>
         <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Quick filters</h3>
         <div className="flex flex-col gap-3">
@@ -88,7 +116,14 @@ export function FilterPanel({ filters, onChange, steps }: FilterPanelProps) {
           onClick={() => setAdvancedOpen((v) => !v)}
           className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wide text-muted-foreground"
         >
-          Advanced filters
+          <span className="flex items-center gap-1.5">
+            Advanced filters
+            {advancedCount > 0 && (
+              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-primary/15 px-1 text-[10px] font-bold text-primary">
+                {advancedCount}
+              </span>
+            )}
+          </span>
           <ChevronDown className={cn("h-4 w-4 transition-transform", advancedOpen && "rotate-180")} />
         </button>
 

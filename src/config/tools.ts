@@ -399,6 +399,21 @@ export function getPopularTools(): ToolDefinition[] {
   return TOOL_REGISTRY.filter((tool) => tool.popular);
 }
 
+/**
+ * Related tools for a tool detail page: fills from the same category first,
+ * then tops up with popular tools from elsewhere so every page has content.
+ */
+export function getRelatedTools(id: string, limit = 3): ToolDefinition[] {
+  const tool = getToolById(id);
+  if (!tool) return [];
+
+  const sameCategory = TOOL_REGISTRY.filter((t) => t.id !== id && t.category === tool.category);
+  if (sameCategory.length >= limit) return sameCategory.slice(0, limit);
+
+  const others = TOOL_REGISTRY.filter((t) => t.id !== id && t.category !== tool.category && t.popular);
+  return [...sameCategory, ...others].slice(0, limit);
+}
+
 export function searchTools(query: string): ToolDefinition[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { TOOL_REGISTRY, getPopularTools, getToolsByCategory, searchTools } from "@/config/tools";
+import { TOOL_REGISTRY, getPopularTools, getRelatedTools, getToolsByCategory, searchTools } from "@/config/tools";
 import { TOOL_CATEGORIES } from "@/config/categories";
 
 const categoryIds = new Set(TOOL_CATEGORIES.map((category) => category.id));
@@ -68,5 +68,28 @@ describe("searchTools", () => {
   it("is case-insensitive", () => {
     const results = searchTools("COMPRESS");
     expect(results.length).toBeGreaterThan(0);
+  });
+});
+
+describe("getRelatedTools", () => {
+  it("never includes the tool itself", () => {
+    const results = getRelatedTools("comment-picker");
+    expect(results.some((tool) => tool.id === "comment-picker")).toBe(false);
+  });
+
+  it("prefers same-category tools before topping up with popular ones", () => {
+    const results = getRelatedTools("comment-picker", 2);
+    expect(results.length).toBe(2);
+    expect(results.every((tool) => tool.category === "engage")).toBe(true);
+  });
+
+  it("tops up with popular tools from other categories when the category runs out", () => {
+    const results = getRelatedTools("comment-picker", 3);
+    expect(results.length).toBe(3);
+    expect(results.some((tool) => tool.category !== "engage")).toBe(true);
+  });
+
+  it("returns an empty array for an unknown id", () => {
+    expect(getRelatedTools("does-not-exist")).toEqual([]);
   });
 });

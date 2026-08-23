@@ -16,7 +16,7 @@ interface DetectResponse {
   status?: PlatformStatusInfo;
 }
 
-export function UrlInput() {
+export function UrlInput({ showPlatformChips = true }: { showPlatformChips?: boolean }) {
   const router = useRouter();
   const [value, setValue] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
@@ -83,13 +83,15 @@ export function UrlInput() {
         </p>
       )}
 
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-        {(["youtube", "reddit", "instagram"] as const).map((p) => (
-          <span key={p} className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
-            <PlatformIcon platform={p} className="h-4 w-4 text-[8px]" /> {PLATFORM_LABEL[p]}
-          </span>
-        ))}
-      </div>
+      {showPlatformChips && (
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+          {(["youtube", "reddit", "instagram"] as const).map((p) => (
+            <span key={p} className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
+              <PlatformIcon platform={p} className="h-4 w-4 text-[8px]" /> {PLATFORM_LABEL[p]}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
