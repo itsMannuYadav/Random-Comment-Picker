@@ -296,7 +296,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "creator",
     icon: Captions,
     href: "/tools/caption-generator",
-    status: "requires-connection",
+    status: "available",
     keywords: ["caption", "ai", "social"],
   },
   {
@@ -306,7 +306,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "creator",
     icon: Type,
     href: "/tools/title-generator",
-    status: "requires-connection",
+    status: "available",
     keywords: ["title", "youtube", "ai"],
   },
   {
@@ -316,7 +316,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "creator",
     icon: Hash,
     href: "/tools/hashtag-generator",
-    status: "requires-connection",
+    status: "available",
     keywords: ["hashtag", "social", "ai"],
   },
   {
@@ -326,7 +326,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "creator",
     icon: Anchor,
     href: "/tools/hook-generator",
-    status: "requires-connection",
+    status: "available",
     keywords: ["hook", "script", "ai"],
   },
   {
@@ -336,7 +336,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "creator",
     icon: AlignLeft,
     href: "/tools/description-generator",
-    status: "requires-connection",
+    status: "available",
     keywords: ["description", "youtube", "ai"],
   },
   {
@@ -346,7 +346,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "creator",
     icon: Reply,
     href: "/tools/comment-reply-generator",
-    status: "requires-connection",
+    status: "available",
     keywords: ["reply", "comment", "ai"],
   },
 

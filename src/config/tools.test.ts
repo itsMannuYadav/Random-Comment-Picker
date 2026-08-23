@@ -28,13 +28,19 @@ describe("tool registry", () => {
       "audio-compressor",
       "audio-converter",
       "audio-metadata",
+      "caption-generator",
       "comment-picker",
+      "comment-reply-generator",
+      "description-generator",
+      "hashtag-generator",
+      "hook-generator",
       "image-compressor",
       "image-converter",
       "image-resizer",
       "qr-generator",
       "social-links",
       "thumbnail-downloader",
+      "title-generator",
       "url-analyzer",
       "url-cleaner",
       "video-to-gif",
@@ -42,16 +48,14 @@ describe("tool registry", () => {
     ]);
   });
 
-  it("marks exactly the AI generators as requires-connection", () => {
+  // The AI generators are implemented exactly like YouTube/Reddit: real code,
+  // gated by a server env var, not a structural gap like Instagram's missing
+  // OAuth flow — so "available" (not "requires-connection") is the accurate
+  // status. No registry entry currently uses "requires-connection"; the
+  // status stays defined for a future tool with a genuine connection gap.
+  it("has no tool marked requires-connection right now", () => {
     const gated = TOOL_REGISTRY.filter((tool) => tool.status === "requires-connection");
-    expect(gated.map((tool) => tool.id).sort()).toEqual([
-      "caption-generator",
-      "comment-reply-generator",
-      "description-generator",
-      "hashtag-generator",
-      "hook-generator",
-      "title-generator",
-    ]);
+    expect(gated).toEqual([]);
   });
 });
 

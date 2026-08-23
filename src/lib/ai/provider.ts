@@ -1,17 +1,19 @@
 import "server-only";
-import { AnthropicProvider } from "./anthropic-provider";
+import { GroqProvider } from "./groq-provider";
 import type { AiProvider } from "./types";
 
 /**
  * The one place that knows which vendor is behind AI_PROVIDER_API_KEY.
- * Swapping providers (or adding a second one selected by a different env
- * var) only ever touches this function — every call site depends on the
- * AiProvider interface, never on a specific SDK.
+ * Currently Groq (see groq-provider.ts) — anthropic-provider.ts is a second,
+ * fully working implementation of the same AiProvider interface kept for
+ * reference; swapping the active vendor is a one-line change here, and
+ * every call site (the /api/ai/generate route, the generator pages)
+ * depends only on the AiProvider interface, never on a specific SDK.
  */
 export function getAiProvider(): AiProvider | null {
   const apiKey = process.env.AI_PROVIDER_API_KEY;
   if (!apiKey) return null;
-  return new AnthropicProvider(apiKey);
+  return new GroqProvider(apiKey);
 }
 
 export function isAiConfigured(): boolean {
