@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ToolCard } from "@/components/ui/tool-card";
 import { FileDropzone } from "@/components/tools/file-dropzone";
-import { getFFmpeg } from "@/lib/video/ffmpeg";
+import { getFFmpeg } from "@/lib/ffmpeg/client";
 import { loadVideoMetadata, formatTimestamp, type VideoMeta } from "@/lib/video/frame";
 import { formatBytes } from "@/lib/image/format";
 import { getRelatedTools } from "@/config/tools";

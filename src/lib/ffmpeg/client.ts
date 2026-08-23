@@ -4,10 +4,11 @@ let ffmpegInstance: FFmpeg | null = null;
 let loadPromise: Promise<FFmpeg> | null = null;
 
 /**
- * Returns a lazily-loaded, session-cached FFmpeg instance. The ~32MB
- * WebAssembly core is only fetched the first time a video tool actually
- * runs a conversion — never on page load, and never in the homepage bundle
- * (doc §97 performance budget). Self-hosted from /public/ffmpeg (see
+ * Returns a lazily-loaded, session-cached FFmpeg instance shared by every
+ * ffmpeg-based tool (video and audio alike). The ~32MB WebAssembly core is
+ * only fetched the first time any of them actually runs a conversion —
+ * never on page load, and never in the homepage bundle (doc §97
+ * performance budget). Self-hosted from /public/ffmpeg (see
  * scripts/copy-ffmpeg-core.mjs) rather than a CDN, since the CSP's
  * connect-src is 'self' only.
  *
