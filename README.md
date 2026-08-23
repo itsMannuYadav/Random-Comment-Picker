@@ -1,36 +1,146 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MyCP — My Comment Picker
 
-## Getting Started
+A fair, transparent random comment picker for giveaways. Paste a YouTube or
+Reddit URL, filter the comments, and run a cryptographically secure draw
+with a publicly verifiable result page.
 
-First, run the development server:
+> Pick a winner. Make it fair.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## What's real here
+
+Every platform integration in this repo calls the platform's **official**
+API — there is no HTML scraping, no reverse-engineered endpoints, and no
+fake/mocked responses. If a platform isn't wired up yet (Instagram OAuth,
+Threads, Facebook, LinkedIn, TikTok, X), the UI says so honestly instead of
+pretending it works — see [Platform status](#platform-status) below.
+
+## Architecture
+
+```text
+src/
+  app/                  Next.js App Router — pages + API routes
+  integrations/         One folder per platform: parser, client, mapper, types
+    youtube/             Real — YouTube Data API v3
+    reddit/               Real — Reddit app-only OAuth
+    instagram/            Real client code, gated behind account connection (not built yet)
+    threads/ facebook/ linkedin/ tiktok/ x/   URL detection only — "coming soon"
+  core/
+    url-detection/        Paste-a-URL → platform + resource ID
+    comment-engine/       Filter pipeline (dedupe, keyword, date range, ...)
+    random/                Secure random draw engine (Web Crypto, never Math.random())
+    verification/         Signed, self-contained draw result tokens
+    rate-limit/            Per-IP request throttling
+  components/            UI (picker flow, homepage, layout, primitives)
+  types/                  Platform + NormalizedComment — the shape every
+                          integration maps into, so the rest of the app never
+                          needs to know which platform a comment came from
+extension/              Manifest V3 browser extension (no API keys inside)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Every platform maps its raw API response into one shared `NormalizedComment`
+shape (`src/types/comment.ts`) before it touches the filter or draw engine —
+neither of those has any platform-specific logic in them.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### No database, and that's deliberate
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+There's no database in V1. Instead, a completed draw's full record is
+serialized, HMAC-signed, and embedded directly in its `/draw/[token]` URL —
+the result page verifies itself on load with no lookup required. This is
+what makes the whole thing work statelessly on Vercel's serverless runtime
+without any persistent process. See `src/core/verification/token.ts` for the
+reasoning and the swap-in point for real persistence once accounts/draw
+history ship.
 
-## Learn More
+### Random selection
 
-To learn more about Next.js, take a look at the following resources:
+`src/core/random/secureRandom.ts` draws from `crypto.getRandomValues` with
+rejection sampling (no modulo bias) and does an unbiased Fisher-Yates
+partial shuffle to pick winners without replacement. Every draw also
+records a SHA-256 hash of the canonically-ordered candidate pool
+(`src/core/verification/hash.ts`), so a result can be checked against
+tampering without re-running the draw.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Local development
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm install
+cp .env.example .env.local   # fill in whatever credentials you have
+npm run dev
+```
 
-## Deploy on Vercel
+Open <http://localhost:3000>. Nothing needs a live API key to explore the
+UI — platforms without credentials configured show an honest "not
+configured" state (see the platform cards on the homepage) instead of
+failing silently.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run build   # production build
+npm run lint
+npm test        # vitest — URL parsing, filters, random engine, draw tokens
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Environment variables
+
+See [`.env.example`](.env.example) for the full list with setup notes.
+Summary:
+
+| Variable | Required for | Notes |
+| --- | --- | --- |
+| `NEXT_PUBLIC_APP_URL` | Every generated link | The app's own origin — see [Domain migration](#domain-migration) |
+| `YOUTUBE_API_KEY` | YouTube | [Google Cloud Console](https://console.cloud.google.com/apis/credentials), enable "YouTube Data API v3" |
+| `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` | Reddit | Create a "script" app at [reddit.com/prefs/apps](https://www.reddit.com/prefs/apps) |
+| `DRAW_SECRET` | Creating draws in production | `openssl rand -base64 32` — dev has an insecure fallback |
+| `INSTAGRAM_CLIENT_ID` / `INSTAGRAM_CLIENT_SECRET` | Future Instagram OAuth | Client code exists in `src/integrations/instagram/client.ts`; there's no account-connection flow yet, so it's unreachable regardless |
+
+## Platform status
+
+| Platform | Status | Notes |
+| --- | --- | --- |
+| YouTube | Available | Full pagination, replies resolved beyond the ~5 YouTube inlines per thread |
+| Reddit | Available | App-only OAuth, full "more comments" tree expansion |
+| Instagram | Requires account connection | Graph API client is real and ready; needs an OAuth connect flow that isn't built |
+| Threads / Facebook / LinkedIn / TikTok / X | Coming soon | No suitable official API for this use case yet — see planning notes before building these |
+
+Ground truth lives in `src/lib/platform-status.ts`. The homepage merges it
+with live credential presence (`src/lib/env.server.ts`) so the platform
+cards say exactly which env var is missing, never just "it doesn't work."
+
+## Deploying
+
+```text
+GitHub → Vercel → Production
+```
+
+No VPS, no persistent process, no filesystem writes. Set the environment
+variables above in the Vercel project settings and deploy.
+
+### Domain migration
+
+`NEXT_PUBLIC_APP_URL` is the single source of truth for the app's origin —
+nothing else in the codebase hard-codes a domain. Moving to a new domain is:
+
+1. Add the custom domain in Vercel.
+2. Update `NEXT_PUBLIC_APP_URL`.
+3. Update `MYCP_APP_URL` in `extension/utils/config.js` and reload the
+   extension.
+4. Update OAuth callback URLs on each platform's developer console once
+   those flows exist.
+5. Redeploy.
+
+## Browser extension
+
+`extension/` is a standalone Manifest V3 extension — see
+[`extension/README.md`](extension/README.md) for what it does and how to
+load it unpacked. It holds no API credentials; it only detects a supported
+page and opens the matching MyCP URL.
+
+## Security notes
+
+- The URL parser only recognizes an explicit allow-list of platform
+  domains (`src/integrations/*/parser.ts`) — there is no generic
+  "fetch whatever URL the user pasted" path, so this isn't an SSRF vector.
+- All provider secrets are server-only env vars, never `NEXT_PUBLIC_*`, and
+  never sent to the browser extension.
+- The draw engine never uses `Math.random()`.
+- Draw result tokens are HMAC-signed; a tampered token fails verification
+  and 404s rather than rendering forged results.

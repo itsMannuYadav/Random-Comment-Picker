@@ -1,26 +1,109 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fbf7f1;
+  --foreground: #1c1815;
+  --card: #ffffff;
+  --card-foreground: #1c1815;
+  --muted: #f1ece2;
+  --muted-foreground: #75695c;
+  --border: #e6dccb;
+  /* Deliberately deeper than a "pure" brand orange (#ff4e2e) so button and
+     link text on top of it clears WCAG AA (4.5:1) — see the contrast check
+     in the project's polish pass. Dark mode's lighter tint doesn't need this. */
+  --primary: #cc3c1c;
+  --primary-foreground: #fffaf6;
+  --accent: #ffb020;
+  --accent-foreground: #1c1815;
+  --success: #157a50;
+  --danger: #d9432b;
+  --ring: #cc3c1c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #14110d;
+    --foreground: #f5ede1;
+    --card: #1c1712;
+    --card-foreground: #f5ede1;
+    --muted: #221c15;
+    --muted-foreground: #a79c8b;
+    --border: #33291e;
+    --primary: #ff6a45;
+    --primary-foreground: #1c1109;
+    --accent: #ffc247;
+    --accent-foreground: #1c1815;
+    --success: #33b980;
+    --danger: #ff6b57;
+    --ring: #ff6a45;
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--primary) 30%, transparent);
+  }
+
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    padding: 0.75rem 1.25rem;
+    border-radius: 0 0 0.5rem 0;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .skip-link:focus {
+    left: 0;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

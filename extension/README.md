@@ -1,0 +1,23 @@
+# MyCP Browser Extension
+
+A minimal Manifest V3 extension. Detects when you're on a supported YouTube
+or Reddit page and opens the matching MyCP picker URL — nothing more.
+
+- No API keys or secrets: see planning doc section 31.
+- No content script, no background service worker: the popup reads the
+  active tab's URL via the `activeTab` permission (granted by opening the
+  popup itself) and opens a new tab. That's the entire surface area.
+- `utils/config.js` holds the one thing that changes when the app migrates
+  domains: `MYCP_APP_URL`.
+
+## Load it locally
+
+1. Open `chrome://extensions` (or `edge://extensions`).
+2. Enable **Developer mode**.
+3. **Load unpacked** → select this `extension/` folder.
+
+## Plain `<script>` includes, not ES modules
+
+`popup.html` loads `config.js`, `detect.js`, then `popup.js` as classic
+scripts (not `type="module"`), so they share a global scope by design —
+this is why the project's Next.js ESLint config excludes this folder.
