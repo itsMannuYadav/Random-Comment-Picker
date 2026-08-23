@@ -26,6 +26,9 @@ describe("tool registry", () => {
     const available = TOOL_REGISTRY.filter((tool) => tool.status === "available");
     expect(available.map((tool) => tool.id).sort()).toEqual([
       "comment-picker",
+      "image-compressor",
+      "image-converter",
+      "image-resizer",
       "thumbnail-downloader",
       "url-analyzer",
     ]);

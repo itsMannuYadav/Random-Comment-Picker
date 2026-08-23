@@ -112,11 +112,11 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
   {
     id: "image-compressor",
     name: "Image Compressor",
-    description: "Shrink JPG, PNG, WebP and AVIF images without leaving your browser.",
+    description: "Shrink JPG, PNG and WebP images without leaving your browser.",
     category: "images",
     icon: ImageMinus,
     href: "/tools/image-compressor",
-    status: "coming-soon",
+    status: "available",
     popular: true,
     keywords: ["compress", "image", "optimize", "size"],
   },
@@ -127,7 +127,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "images",
     icon: RefreshCcw,
     href: "/tools/image-converter",
-    status: "coming-soon",
+    status: "available",
     keywords: ["convert", "image", "format"],
   },
   {
@@ -137,7 +137,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "images",
     icon: Crop,
     href: "/tools/image-resizer",
-    status: "coming-soon",
+    status: "available",
     keywords: ["resize", "crop", "image"],
   },
   {

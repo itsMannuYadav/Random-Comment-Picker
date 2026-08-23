@@ -11,6 +11,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/tools/comment-picker",
     "/tools/thumbnail-downloader",
     "/tools/url-analyzer",
+    "/tools/image-compressor",
+    "/tools/image-converter",
+    "/tools/image-resizer",
     ...TOOL_CATEGORIES.map((category) => category.href),
   ];
   return pages.map((path) => ({
