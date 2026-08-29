@@ -1,148 +1,360 @@
-# MyCP — My Comment Picker
+# MySocial
 
-Created by [Mannu Yadav](https://mycp.mannuyadav.me).
+**The creator toolkit that doesn't cut corners.**
 
-A fair, transparent random comment picker for giveaways. Paste a YouTube or
-Reddit URL, filter the comments, and run a cryptographically secure draw
-with a publicly verifiable result page.
+MySocial is an open, production-quality web app for content creators — built around a fair, cryptographically verifiable comment picker and growing into a full toolkit covering images, video, audio, social utilities, and AI-powered creator writing.
 
-> Pick a winner. Make it fair.
+The flagship tool lets you paste a YouTube, Reddit, or Instagram URL, fetch every comment through the platform's **official API** (no scraping, ever), apply powerful filters, and pick one or more winners using a cryptographically secure random draw that anyone can independently verify by its Draw ID.
 
-## What's real here
+---
 
-Every platform integration in this repo calls the platform's **official**
-API — there is no HTML scraping, no reverse-engineered endpoints, and no
-fake/mocked responses. If a platform isn't wired up yet (Instagram OAuth,
-Threads, Facebook, LinkedIn, TikTok, X), the UI says so honestly instead of
-pretending it works — see [Platform status](#platform-status) below.
+## Tools
+
+### Engage
+| Tool | Status |
+|---|---|
+| **Comment Picker** — Pick random giveaway winners from YouTube, Reddit and Instagram comments | ✅ Available |
+| Comment Counter | Coming soon |
+| Comment Cleaner | Coming soon |
+
+### Images
+| Tool | Status |
+|---|---|
+| **Thumbnail Downloader** — Download the highest-res thumbnail from any YouTube video | ✅ Available |
+| **Image Compressor** — Shrink JPG, PNG and WebP images entirely in the browser | ✅ Available |
+| **Image Converter** — Convert between PNG, JPG and WebP | ✅ Available |
+| **Image Resizer** — Resize and crop to exact dimensions or social presets | ✅ Available |
+| Thumbnail Checker | Coming soon |
+| Social Image Resizer | Coming soon |
+
+### Video
+| Tool | Status |
+|---|---|
+| **Video → Thumbnail** — Grab a still frame from any point in an uploaded video | ✅ Available |
+| **Video → GIF** — Turn a clip into a GIF with custom time range and frame rate | ✅ Available |
+| **Video Downloader** — Download public videos via platforms' official APIs | ✅ Available |
+| Frame Extractor | Coming soon |
+| Video Compressor | Coming soon |
+| Video Converter | Coming soon |
+| Social Video Resizer | Coming soon |
+
+### Audio
+| Tool | Status |
+|---|---|
+| **Audio Converter** — Convert between MP3, WAV and OGG | ✅ Available |
+| **Audio Compressor** — Reduce audio file size | ✅ Available |
+| **Audio Metadata** — Inspect duration, sample rate and channels | ✅ Available |
+
+### Social
+| Tool | Status |
+|---|---|
+| **Social URL Analyzer** — Paste any supported URL and see its metadata and available tools | ✅ Available |
+| **URL Cleaner** — Strip UTM and tracking parameters from any social or video URL | ✅ Available |
+| **Social Link Generator** — Generate profile links for a username across platforms | ✅ Available |
+| Social Metadata | Coming soon |
+
+### Creator (AI-powered)
+All generators are powered by Groq and use a provider-agnostic abstraction — swap the provider by changing one env var.
+
+| Tool | Status |
+|---|---|
+| **Caption Generator** — Caption, hashtags and CTA for your next post | ✅ Available |
+| **Title Generator** — YouTube title concepts for any topic | ✅ Available |
+| **Hashtag Generator** — Relevant hashtag suggestions for your content | ✅ Available |
+| **Hook Generator** — Opening hooks for a video or post | ✅ Available |
+| **Description Generator** — YouTube or social post descriptions | ✅ Available |
+| **Comment Reply Generator** — Suggested replies to a comment | ✅ Available |
+
+### Utilities
+| Tool | Status |
+|---|---|
+| **QR Generator** — Generate a QR code for a link, video or tool | ✅ Available |
+| File Information | Coming soon |
+
+---
+
+## Comment Picker — how it works
+
+```
+Paste URL
+  ↓
+Detect platform
+  ↓
+Fetch comments via official API
+  ↓
+Normalize into common format
+  ↓
+Apply filters (duplicates, keywords, date range, replies…)
+  ↓
+Build eligible entry pool
+  ↓
+Cryptographically secure random draw
+  ↓
+Winner animation
+  ↓
+Shareable result page  (/draw/MYCP-XXXXXX)
+```
+
+Every draw gets a **Draw ID** (e.g. `MYCP-8F3A91`). The result page at `/draw/[id]` shows the total entries, filters used, and the winner — enough for anyone watching your giveaway to independently confirm the result.
+
+### Supported platforms
+
+| Platform | Comment Picker | Notes |
+|---|---|---|
+| YouTube | ✅ Available | Public videos via YouTube Data API v3 |
+| Reddit | ✅ Available | App-only OAuth via Reddit API |
+| Instagram | Requires account connection | Media must be owned by the connected professional account |
+| TikTok | Coming soon | |
+| Threads / Facebook / LinkedIn / X | Coming soon | |
+
+---
 
 ## Architecture
 
-```text
-src/
-  app/                  Next.js App Router — pages + API routes
-  integrations/         One folder per platform: parser, client, mapper, types
-    youtube/             Real — YouTube Data API v3
-    reddit/               Real — Reddit app-only OAuth
-    instagram/            Real client code, gated behind account connection (not built yet)
-    threads/ facebook/ linkedin/ tiktok/ x/   URL detection only — "coming soon"
-  core/
-    url-detection/        Paste-a-URL → platform + resource ID
-    comment-engine/       Filter pipeline (dedupe, keyword, date range, ...)
-    random/                Secure random draw engine (Web Crypto, never Math.random())
-    verification/         Signed, self-contained draw result tokens
-    rate-limit/            Per-IP request throttling
-  components/            UI (picker flow, homepage, layout, primitives)
-  types/                  Platform + NormalizedComment — the shape every
-                          integration maps into, so the rest of the app never
-                          needs to know which platform a comment came from
-extension/              Manifest V3 browser extension (no API keys inside)
+### Platform adapters
+
+Each platform lives in its own adapter — parser, API client, and mapper — so adding a new platform never touches the draw engine:
+
+```
+src/integrations/
+  youtube/   — URL parser · API client · mapper · types
+  reddit/    — URL parser · API client · mapper · types
+  instagram/ — URL parser · OAuth client · mapper · types
+  …
+
+src/core/
+  comment-engine/ — normalization, deduplication, filtering
+  random/         — cryptographically secure draw, deterministic pool hash
+  verification/   — Draw ID generation and HMAC-signed result tokens
 ```
 
-Every platform maps its raw API response into one shared `NormalizedComment`
-shape (`src/types/comment.ts`) before it touches the filter or draw engine —
-neither of those has any platform-specific logic in them.
+All platforms map into a single `NormalizedComment` model. The draw engine never knows which platform a comment came from.
 
-### No database, and that's deliberate
+### AI provider abstraction
 
-There's no database in V1. Instead, a completed draw's full record is
-serialized, HMAC-signed, and embedded directly in its `/draw/[token]` URL —
-the result page verifies itself on load with no lookup required. This is
-what makes the whole thing work statelessly on Vercel's serverless runtime
-without any persistent process. See `src/core/verification/token.ts` for the
-reasoning and the swap-in point for real persistence once accounts/draw
-history ship.
+`src/lib/ai/provider.ts` is the only file that knows the AI provider is Groq. Every generator calls a shared interface — swapping providers requires changing one file and one env var.
 
-### Random selection
+### Browser-side media processing
 
-`src/core/random/secureRandom.ts` draws from `crypto.getRandomValues` with
-rejection sampling (no modulo bias) and does an unbiased Fisher-Yates
-partial shuffle to pick winners without replacement. Every draw also
-records a SHA-256 hash of the canonically-ordered candidate pool
-(`src/core/verification/hash.ts`), so a result can be checked against
-tampering without re-running the draw.
+Image, video and audio tools run **entirely in the browser** using FFmpeg compiled to WebAssembly (`@ffmpeg/ffmpeg`). No file is uploaded to a server for processing.
+
+### Security principles
+
+- All platform API secrets stay server-side. Nothing is in `NEXT_PUBLIC_*` except the app name and URL.
+- The browser extension never contains API credentials — it only opens the MySocial website.
+- The URL parser accepts only known platform domains. There is no generic `fetch(userProvidedUrl)` endpoint.
+- Inputs are validated at every boundary with Zod.
+- The draw uses `crypto.getRandomValues` (or the Node.js `crypto` module), not `Math.random()`.
+
+---
+
+## Stack
+
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript (strict) |
+| Styling | Tailwind CSS v4 |
+| UI components | Radix UI + custom components |
+| Icons | Lucide React |
+| AI | Groq SDK (provider-agnostic wrapper) |
+| Media processing | FFmpeg/WebAssembly |
+| Deployment | Vercel |
+| Testing | Vitest |
+
+---
 
 ## Local development
 
+### 1. Clone and install
+
 ```bash
+git clone https://github.com/itsMannu-Yadav/mysocial.git
+cd mysocial
 npm install
-cp .env.example .env.local   # fill in whatever credentials you have
+```
+
+### 2. Configure environment variables
+
+```bash
+cp .env.example .env.local
+```
+
+Open `.env.local` and fill in the values you need. Only add what the tools you want to use actually require:
+
+```env
+# Required for all tools
+NEXT_PUBLIC_APP_NAME=MySocial
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Comment Picker — YouTube
+YOUTUBE_API_KEY=
+
+# Comment Picker — Reddit
+REDDIT_CLIENT_ID=
+REDDIT_CLIENT_SECRET=
+REDDIT_USER_AGENT=web:mysocial:v1.0.0 (by /u/your-username)
+
+# AI tools (Caption, Title, Hashtag, Hook, Description, Reply generators)
+AI_PROVIDER_API_KEY=
+
+# Draw verification (required for the picker in production)
+# Generate with: openssl rand -base64 32
+DRAW_SECRET=
+
+# Instagram (future account-connection flow)
+INSTAGRAM_CLIENT_ID=
+INSTAGRAM_CLIENT_SECRET=
+```
+
+You can use the image/video/audio tools and all AI generators without the platform API keys — those only become required when running the Comment Picker.
+
+### 3. Run the dev server
+
+```bash
 npm run dev
 ```
 
-Open <http://localhost:3000>. Nothing needs a live API key to explore the
-UI — platforms without credentials configured show an honest "not
-configured" state (see the platform cards on the homepage) instead of
-failing silently.
+Open [http://localhost:3000](http://localhost:3000).
+
+### 4. Run tests
 
 ```bash
-npm run build   # production build
-npm run lint
-npm test        # vitest — URL parsing, filters, random engine, draw tokens
+npm test
 ```
 
-## Environment variables
+### 5. Build for production
 
-See [`.env.example`](.env.example) for the full list with setup notes.
-Summary:
-
-| Variable | Required for | Notes |
-| --- | --- | --- |
-| `NEXT_PUBLIC_APP_URL` | Every generated link | The app's own origin — see [Domain migration](#domain-migration) |
-| `YOUTUBE_API_KEY` | YouTube | [Google Cloud Console](https://console.cloud.google.com/apis/credentials), enable "YouTube Data API v3" |
-| `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` | Reddit | Create a "script" app at [reddit.com/prefs/apps](https://www.reddit.com/prefs/apps) |
-| `DRAW_SECRET` | Creating draws in production | `openssl rand -base64 32` — dev has an insecure fallback |
-| `INSTAGRAM_CLIENT_ID` / `INSTAGRAM_CLIENT_SECRET` | Future Instagram OAuth | Client code exists in `src/integrations/instagram/client.ts`; there's no account-connection flow yet, so it's unreachable regardless |
-
-## Platform status
-
-| Platform | Status | Notes |
-| --- | --- | --- |
-| YouTube | Available | Full pagination, replies resolved beyond the ~5 YouTube inlines per thread |
-| Reddit | Available | App-only OAuth, full "more comments" tree expansion |
-| Instagram | Requires account connection | Graph API client is real and ready; needs an OAuth connect flow that isn't built |
-| Threads / Facebook / LinkedIn / TikTok / X | Coming soon | No suitable official API for this use case yet — see planning notes before building these |
-
-Ground truth lives in `src/lib/platform-status.ts`. The homepage merges it
-with live credential presence (`src/lib/env.server.ts`) so the platform
-cards say exactly which env var is missing, never just "it doesn't work."
-
-## Deploying
-
-```text
-GitHub → Vercel → Production
+```bash
+npm run build
+npm run start
 ```
 
-No VPS, no persistent process, no filesystem writes. Set the environment
-variables above in the Vercel project settings and deploy.
+---
+
+## API key setup guides
+
+### YouTube Data API v3
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+2. Create a project (or use an existing one).
+3. Enable the **YouTube Data API v3** on the project.
+4. Create an **API key** and restrict it to the YouTube Data API v3.
+5. Add it as `YOUTUBE_API_KEY` in your `.env.local`.
+
+No OAuth is required — public comment retrieval uses an API key only.
+
+### Reddit
+
+1. Go to [reddit.com/prefs/apps](https://www.reddit.com/prefs/apps).
+2. Create a new **script** app.
+3. Copy the `client_id` (under the app name) and the `secret`.
+4. Set `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, and a descriptive `REDDIT_USER_AGENT`.
+
+The Reddit integration uses app-only (client credentials) OAuth — no user account connection needed.
+
+### Groq (AI generators)
+
+1. Go to [console.groq.com/keys](https://console.groq.com/keys).
+2. Create an API key.
+3. Add it as `AI_PROVIDER_API_KEY`.
+
+---
+
+## Deploying to Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
+
+1. Push this repository to GitHub.
+2. Import the repo in [vercel.com/new](https://vercel.com/new).
+3. Add your environment variables in the Vercel dashboard under **Settings → Environment Variables** — use the same keys from `.env.example`.
+4. Set `NEXT_PUBLIC_APP_URL` to your production domain (e.g. `https://mysocial.example.com`).
+5. Deploy.
 
 ### Domain migration
 
-`NEXT_PUBLIC_APP_URL` is the single source of truth for the app's origin —
-nothing else in the codebase hard-codes a domain. Moving to a new domain is:
+The entire application is driven by two env vars:
 
-1. Add the custom domain in Vercel.
-2. Update `NEXT_PUBLIC_APP_URL`.
-3. Update `MYCP_APP_URL` in `extension/utils/config.js` and reload the
-   extension.
-4. Update OAuth callback URLs on each platform's developer console once
-   those flows exist.
-5. Redeploy.
+```env
+NEXT_PUBLIC_APP_NAME=MySocial
+NEXT_PUBLIC_APP_URL=https://your-domain.com
+```
+
+Changing the domain requires updating these vars, the OAuth redirect URLs in each platform's developer console, and redeploying. No source code changes needed.
+
+---
 
 ## Browser extension
 
-`extension/` is a standalone Manifest V3 extension — see
-[`extension/README.md`](extension/README.md) for what it does and how to
-load it unpacked. It holds no API credentials; it only detects a supported
-page and opens the matching MyCP URL.
+A Manifest V3 Chromium extension lives in `extension/`. When you're on a supported page (YouTube video, Reddit post), the popup shows the video or post details and a **"Open in MySocial"** button that takes you straight to the comment picker.
 
-## Security notes
+The extension **never contains API credentials**. It only opens MySocial URLs and calls safe public endpoints.
 
-- The URL parser only recognizes an explicit allow-list of platform
-  domains (`src/integrations/*/parser.ts`) — there is no generic
-  "fetch whatever URL the user pasted" path, so this isn't an SSRF vector.
-- All provider secrets are server-only env vars, never `NEXT_PUBLIC_*`, and
-  never sent to the browser extension.
-- The draw engine never uses `Math.random()`.
-- Draw result tokens are HMAC-signed; a tampered token fails verification
-  and 404s rather than rendering forged results.
+### Load the extension locally
+
+1. Open `chrome://extensions` (or `edge://extensions`).
+2. Enable **Developer mode**.
+3. Click **Load unpacked** and select the `extension/` folder.
+
+---
+
+## Project structure
+
+```
+.
+├── src/
+│   ├── app/                   # Next.js App Router pages
+│   │   ├── y/[videoId]/       # YouTube picker
+│   │   ├── r/[postId]/        # Reddit picker
+│   │   ├── i/[mediaId]/       # Instagram picker
+│   │   ├── draw/[token]/      # Verifiable result page
+│   │   ├── tools/             # All tool pages
+│   │   └── extension/         # Extension landing page
+│   ├── components/            # Shared UI components
+│   ├── config/
+│   │   ├── tools.ts           # Central tool registry
+│   │   └── categories.ts      # Tool category taxonomy
+│   ├── integrations/          # Per-platform adapters
+│   ├── core/                  # Draw engine, filters, verification
+│   ├── lib/
+│   │   ├── ai/                # Provider-agnostic AI wrapper
+│   │   └── env.server.ts      # Server-side credential checks
+│   └── types/                 # Shared TypeScript types
+├── extension/                 # Chromium browser extension (MV3)
+├── .env.example               # All supported env vars with comments
+└── planning doc.md            # Full product specification
+```
+
+---
+
+## Fairness and verification
+
+Draw results are tamper-evident by design:
+
+- The eligible entry pool is hashed before selection.
+- The winner is chosen using `crypto.getRandomValues`, not `Math.random()`.
+- The result URL (`/draw/[token]`) encodes the draw metadata in an HMAC-signed token — the token cannot be forged without the `DRAW_SECRET`.
+- The result page shows total entries, filters applied, the algorithm version, and the Draw ID so anyone can verify the giveaway was run honestly.
+
+---
+
+## Contributing
+
+Pull requests are welcome. For large changes, open an issue first to discuss the approach.
+
+A few ground rules that match the project's philosophy:
+
+- **Official APIs only.** No scraping, no unofficial endpoints, no session-cookie tricks.
+- **No secrets in the client.** Nothing sensitive in `NEXT_PUBLIC_*` or the extension bundle.
+- **Honest status labels.** A tool is `Available` only when it works end-to-end. `Coming soon` is not a placeholder for broken features.
+- **TypeScript strict.** Keep `noImplicitAny` clean.
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+
+---
+
+*Built by [Mannu Yadav](https://github.com/itsMannu-Yadav)*

@@ -2,28 +2,54 @@ import { NextRequest, NextResponse } from "next/server";
 import { ApiError, apiErrorResponse } from "@/lib/api-error";
 import { checkRateLimit, getClientKey } from "@/core/rate-limit/limiter";
 
-// Every hostname a video-download format's `url`/`audioUrl` is allowed to
-// point at. The info endpoint only ever returns URLs from these hosts
-// (Reddit's own official API responses), but this route re-validates
-// independently rather than trusting that invariant blindly — the fetch
-// target is always resolved from this fixed allowlist, never an arbitrary
-// client-supplied host, so this can't become an open fetch/SSRF proxy
-// (doc §49/§50 — same reasoning as the YouTube thumbnail-file route).
-const ALLOWED_HOSTS = new Set(["v.redd.it"]);
+/**
+ * Hosts whose URLs come exclusively from our own server-side API responses
+ * (Reddit's official API, Vimeo's official API) — fast-pathed through without
+ * an extra HEAD request. Adding a host here is a deliberate trust decision,
+ * not a convenience; every host must be a CDN we control the upstream of.
+ */
+const TRUSTED_CDN_HOSTS = new Set([
+  // Reddit
+  "v.redd.it",
+  // Vimeo progressive download CDN (Akamai)
+  "vod-progressive.akamaized.net",
+  "vod.akamaized.net",
+  // Vimeo fallback CDN
+  "player.vimeo.com",
+  "fresnel.vimeocdn.com",
+]);
 
-const RATE_LIMIT = 30; // downloads per window, per IP — this relays real video bandwidth
+const RATE_LIMIT = 30;
 const RATE_WINDOW_MS = 60_000;
 
+const VIDEO_CONTENT_TYPES = ["video/", "audio/", "application/octet-stream"];
+
+function isPrivateHost(hostname: string): boolean {
+  if (hostname === "localhost" || hostname === "::1") return true;
+  const parts = hostname.split(".").map(Number);
+  if (parts.length !== 4 || parts.some(isNaN)) return false;
+  const [a, b] = parts;
+  return (
+    a === 127 ||
+    a === 10 ||
+    (a === 172 && b >= 16 && b <= 31) ||
+    (a === 192 && b === 168) ||
+    (a === 169 && b === 254) ||
+    a === 0
+  );
+}
+
 /**
- * Same-origin relay for CDN bytes a download format points at. Two reasons
- * this exists instead of the browser fetching the CDN directly:
- * 1. Forces a real file save via Content-Disposition — cross-origin <a
- *    download> is silently ignored by browsers without it (the same issue
- *    the YouTube thumbnail-file route works around).
- * 2. Sidesteps depending on the CDN sending permissive CORS headers for
- *    the client-side ffmpeg.wasm muxing step to read the bytes at all —
- *    a same-origin fetch always works regardless of the CDN's own CORS
- *    posture.
+ * Same-origin relay for CDN bytes a download format points at.
+ *
+ * Two trust tiers:
+ * 1. TRUSTED_CDN_HOSTS — fast path; URLs come from our own server API calls
+ *    so host membership is sufficient.
+ * 2. Direct video links — any HTTPS non-private host that returns a video or
+ *    audio Content-Type. An extra HEAD is done to confirm before streaming.
+ *    This exists so users can paste raw .mp4 / .webm URLs. It is NOT an open
+ *    proxy: private/loopback addresses are rejected, and the content-type gate
+ *    means arbitrary HTML pages can't be fetched through it.
  */
 export async function GET(req: NextRequest) {
   try {
@@ -34,9 +60,7 @@ export async function GET(req: NextRequest) {
     }
 
     const target = req.nextUrl.searchParams.get("url");
-    if (!target) {
-      throw new ApiError("invalid-request", "A file URL is required.");
-    }
+    if (!target) throw new ApiError("invalid-request", "A file URL is required.");
 
     let url: URL;
     try {
@@ -44,8 +68,32 @@ export async function GET(req: NextRequest) {
     } catch {
       throw new ApiError("invalid-request", "That's not a valid URL.");
     }
-    if (url.protocol !== "https:" || !ALLOWED_HOSTS.has(url.hostname)) {
+
+    if (url.protocol !== "https:") {
+      throw new ApiError("invalid-request", "Only HTTPS URLs are supported.");
+    }
+    if (isPrivateHost(url.hostname)) {
       throw new ApiError("invalid-request", "That file host isn't supported.");
+    }
+
+    const isTrusted = TRUSTED_CDN_HOSTS.has(url.hostname);
+
+    if (!isTrusted) {
+      // Secondary path: validate Content-Type is actually video/audio before streaming
+      let headContentType = "";
+      try {
+        const head = await fetch(url, { method: "HEAD", cache: "no-store" });
+        headContentType = head.headers.get("content-type") ?? "";
+        if (!head.ok) throw new ApiError("not-found", "That file couldn't be reached.");
+      } catch (err) {
+        if (err instanceof ApiError) throw err;
+        throw new ApiError("not-found", "That file couldn't be downloaded.");
+      }
+
+      const isVideo = VIDEO_CONTENT_TYPES.some((t) => headContentType.startsWith(t));
+      if (!isVideo) {
+        throw new ApiError("invalid-request", "That URL doesn't point to a video or audio file.");
+      }
     }
 
     const upstream = await fetch(url, { cache: "no-store" });
@@ -53,10 +101,11 @@ export async function GET(req: NextRequest) {
       throw new ApiError("not-found", "That file couldn't be downloaded.");
     }
 
-    const filename = url.pathname.split("/").pop() || "download.mp4";
+    const contentType = upstream.headers.get("content-type") || "application/octet-stream";
+    const filename = url.pathname.split("/").pop() || "download";
     return new NextResponse(upstream.body, {
       headers: {
-        "Content-Type": upstream.headers.get("content-type") || "application/octet-stream",
+        "Content-Type": contentType,
         "Content-Disposition": `attachment; filename="${filename}"`,
         "Cache-Control": "private, max-age=3600",
       },

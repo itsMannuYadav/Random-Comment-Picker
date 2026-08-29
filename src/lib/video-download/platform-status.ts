@@ -1,4 +1,4 @@
-import type { Platform } from "@/types/platform";
+import type { VideoDownloadPlatform } from "./types";
 
 export type VideoDownloadStatusKind = "available" | "requires-connection" | "coming-soon";
 
@@ -19,7 +19,7 @@ export interface VideoDownloadStatusInfo {
  * see the plan this shipped under for sources. Never derived from
  * credential presence; see the same rationale in platform-status.ts.
  */
-export const VIDEO_DOWNLOAD_STATUS: Record<Platform, VideoDownloadStatusInfo> = {
+export const VIDEO_DOWNLOAD_STATUS: Record<VideoDownloadPlatform, VideoDownloadStatusInfo> = {
   reddit: {
     status: "available",
     label: "Available",
@@ -64,5 +64,17 @@ export const VIDEO_DOWNLOAD_STATUS: Record<Platform, VideoDownloadStatusInfo> = 
     status: "coming-soon",
     label: "Coming soon",
     description: "No LinkedIn integration exists yet to build video download on top of.",
+  },
+  vimeo: {
+    status: "available",
+    label: "Available",
+    description:
+      "Vimeo's official API exposes download links for videos where the creator has enabled downloads. Requires a VIMEO_ACCESS_TOKEN — see the setup guide in .env.example.",
+  },
+  direct: {
+    status: "available",
+    label: "Available",
+    description:
+      "Paste any public HTTPS direct video link (.mp4, .webm, .mov …) and we'll proxy it through a secure download — no third-party platform needed.",
   },
 };

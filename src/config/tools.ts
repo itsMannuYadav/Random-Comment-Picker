@@ -169,7 +169,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "video",
     icon: Scissors,
     href: "/tools/frame-extractor",
-    status: "coming-soon",
+    status: "available",
     keywords: ["video", "frames", "extract"],
   },
   {
@@ -179,7 +179,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "video",
     icon: Clapperboard,
     href: "/tools/video-compressor",
-    status: "coming-soon",
+    status: "available",
     keywords: ["compress", "video", "size"],
   },
   {
@@ -189,7 +189,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "video",
     icon: FileVideo,
     href: "/tools/video-converter",
-    status: "coming-soon",
+    status: "available",
     keywords: ["convert", "video", "format"],
   },
   {
@@ -285,7 +285,7 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     category: "social",
     icon: BroomIcon,
     href: "/tools/social-metadata",
-    status: "coming-soon",
+    status: "available",
     keywords: ["metadata", "social", "info"],
   },
   {
