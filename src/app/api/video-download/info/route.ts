@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getRedditVideoInfo } from "@/integrations/reddit";
 import { getInstagramVideoInfo } from "@/integrations/instagram/video";
 import { getVimeoVideoInfo, VimeoError } from "@/integrations/vimeo";
+import { getYoutubeVideoInfo } from "@/integrations/youtube/video";
 import { VIDEO_DOWNLOAD_STATUS } from "@/lib/video-download/platform-status";
 import { ApiError, apiErrorResponse } from "@/lib/api-error";
 import { checkRateLimit, getClientKey } from "@/core/rate-limit/limiter";
@@ -132,6 +133,8 @@ export async function GET(req: NextRequest) {
     const { platform, resourceId } = parsed.data;
 
     switch (platform) {
+      case "youtube":
+        return NextResponse.json(await getYoutubeVideoInfo(resourceId));
       case "reddit":
         return NextResponse.json(await getRedditVideoInfo(resourceId));
       case "vimeo":

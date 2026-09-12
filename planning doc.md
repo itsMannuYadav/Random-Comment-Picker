@@ -92,6 +92,8 @@ Before implementing any platform integration:
 
 The application must remain extensible so that a future API change does not require rewriting the entire application.
 
+**Amendment (2026-09-12):** YouTube video download is a deliberate, explicit exception to this rule — YouTube's Data API has no video-file-download endpoint for third-party videos at all, so rule 9's "Coming soon" fallback was replaced with an unofficial implementation (parsing YouTube's public player response, the same technique tools like yt-dlp use) by product decision. This is disclosed in the UI (see VIDEO_DOWNLOAD_STATUS in src/lib/video-download/platform-status.ts) rather than presented as an official integration. The rule above still applies to every other platform and every other feature.
+
 ---
 
 # 3. INITIAL PLATFORM PRIORITY

@@ -1059,6 +1059,8 @@ media/
 
 This allows future lawful/official integrations without rewriting the media system.
 
+**Amendment (2026-09-12):** YouTube is an explicit, deliberate exception, made by product decision, to "official platform download mechanisms/APIs where available": no official YouTube API exposes third-party video file downloads, so YouTube download is implemented via the public player-response parsing technique used by tools like yt-dlp, disclosed as unofficial in the UI. This does not extend to DRM bypass, CAPTCHA evasion, stolen cookies, or private content — those restrictions above remain in force for every platform including YouTube.
+
 ---
 
 # 29. SOCIAL URL ANALYZER

@@ -32,7 +32,7 @@ The flagship tool lets you paste a YouTube, Reddit, or Instagram URL, fetch ever
 |---|---|
 | **Video → Thumbnail** — Grab a still frame from any point in an uploaded video | ✅ Available |
 | **Video → GIF** — Turn a clip into a GIF with custom time range and frame rate | ✅ Available |
-| **Video Downloader** — Download public videos via platforms' official APIs | ✅ Available |
+| **Video Downloader** — Download public videos (Reddit, Vimeo, direct links via official APIs; YouTube via unofficial extraction) | ✅ Available |
 | Frame Extractor | Coming soon |
 | Video Compressor | Coming soon |
 | Video Converter | Coming soon |
@@ -344,7 +344,7 @@ Pull requests are welcome. For large changes, open an issue first to discuss the
 
 A few ground rules that match the project's philosophy:
 
-- **Official APIs only.** No scraping, no unofficial endpoints, no session-cookie tricks.
+- **Official APIs by default.** No scraping, no unofficial endpoints, no session-cookie tricks — unless there genuinely is no official mechanism for a feature (currently: YouTube video download), in which case the unofficial fallback and its risks (Terms of Service, breakage) must be disclosed in the UI, not hidden.
 - **No secrets in the client.** Nothing sensitive in `NEXT_PUBLIC_*` or the extension bundle.
 - **Honest status labels.** A tool is `Available` only when it works end-to-end. `Coming soon` is not a placeholder for broken features.
 - **TypeScript strict.** Keep `noImplicitAny` clean.

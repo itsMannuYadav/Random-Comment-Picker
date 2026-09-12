@@ -13,11 +13,18 @@ export interface VideoDownloadStatusInfo {
  * Ground-truth video-download capability per platform — deliberately
  * separate from PLATFORM_STATUS in src/lib/platform-status.ts, which
  * describes *comment-picking* capability. The two are independent: Reddit
- * supports both, YouTube supports comment-picking but not video download,
- * Instagram supports neither without a connected account. Researched
- * against each platform's current official API documentation (Aug 2026) —
- * see the plan this shipped under for sources. Never derived from
- * credential presence; see the same rationale in platform-status.ts.
+ * supports both, Instagram supports neither without a connected account.
+ * Researched against each platform's current official API documentation
+ * (Aug 2026) — see the plan this shipped under for sources. Never derived
+ * from credential presence; see the same rationale in platform-status.ts.
+ *
+ * YouTube is the deliberate exception to "official APIs only": YouTube's
+ * Data API has no video-file-download endpoint for third-party videos, full
+ * stop, so there is no official path to build this feature against. Support
+ * here is implemented by parsing YouTube's public player response (the same
+ * unofficial technique tools like yt-dlp use), which YouTube's Terms of
+ * Service prohibit and can break without notice whenever YouTube changes
+ * that response. See src/integrations/youtube/video.ts.
  */
 export const VIDEO_DOWNLOAD_STATUS: Record<VideoDownloadPlatform, VideoDownloadStatusInfo> = {
   reddit: {
@@ -33,10 +40,10 @@ export const VIDEO_DOWNLOAD_STATUS: Record<VideoDownloadPlatform, VideoDownloadS
       "Instagram's Graph API only returns a downloadable media URL for video owned by the connected professional account — there is no public/anonymous video-download endpoint.",
   },
   youtube: {
-    status: "coming-soon",
-    label: "Not available",
+    status: "available",
+    label: "Available (unofficial, unreliable)",
     description:
-      "YouTube's official Data API does not provide video file downloads for any channel other than your own, and downloading otherwise violates YouTube's Terms of Service. No official mechanism exists to build this against.",
+      "Downloads by parsing YouTube's public player response — the same unofficial technique tools like yt-dlp use, since YouTube's official Data API has no video-download endpoint for third-party videos. This violates YouTube's Terms of Service, and as of this build it frequently fails outright (YouTube's current signature cipher isn't fully solved by the extraction library) — it may work for some videos and not others, with no fix possible on our side beyond waiting for an upstream library update. Only download videos you have the right to download.",
   },
   tiktok: {
     status: "coming-soon",
