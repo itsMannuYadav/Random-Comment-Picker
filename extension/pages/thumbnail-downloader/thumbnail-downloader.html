@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>MySocial — Thumbnail Downloader</title>
+    <link rel="stylesheet" href="../video-downloader/video-downloader.css" />
+    <link rel="stylesheet" href="thumbnail-downloader.css" />
+  </head>
+  <body>
+    <header class="brand">
+      <img src="../../icons/icon48.png" alt="" width="24" height="24" />
+      <span>MySocial Thumbnail Downloader</span>
+    </header>
+
+    <main>
+      <form id="url-form" class="url-form">
+        <input id="url-input" type="text" placeholder="Paste any video/post URL — YouTube, Reddit, Vimeo, or any website" autofocus />
+        <button type="submit" id="check-btn">Find Thumbnail</button>
+      </form>
+
+      <div id="notice" class="notice" hidden></div>
+      <div id="result" class="thumb-grid"></div>
+    </main>
+
+    <script src="../../utils/config.js"></script>
+    <script src="../shared/detect-video-platform.js"></script>
+    <script src="thumbnail-downloader.js"></script>
+  </body>
+</html>

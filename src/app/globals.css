@@ -107,3 +107,14 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Homepage hero carousel — re-mounting the slide content with a fresh `key`
+   restarts this animation, so no manual opacity state/effect is needed. */
+@keyframes hero-slide-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-slide-fade {
+  animation: hero-slide-fade 0.35s ease-out;
+}

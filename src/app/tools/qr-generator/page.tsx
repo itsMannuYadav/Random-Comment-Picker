@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import QRCode from "qrcode";
 import { ChevronRight, Download, QrCode as QrCodeIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -18,8 +19,9 @@ const ERROR_LEVELS = [
   { value: "H", label: "High" },
 ] as const;
 
-export default function QrGeneratorPage() {
-  const [text, setText] = useState("");
+function QrGeneratorPageInner() {
+  const searchParams = useSearchParams();
+  const [text, setText] = useState(() => searchParams.get("text") ?? "");
   const [size, setSize] = useState<(typeof SIZES)[number]>(300);
   const [margin, setMargin] = useState(2);
   const [errorLevel, setErrorLevel] = useState<(typeof ERROR_LEVELS)[number]["value"]>("M");
@@ -233,5 +235,13 @@ export default function QrGeneratorPage() {
         </section>
       )}
     </main>
+  );
+}
+
+export default function QrGeneratorPage() {
+  return (
+    <Suspense fallback={null}>
+      <QrGeneratorPageInner />
+    </Suspense>
   );
 }

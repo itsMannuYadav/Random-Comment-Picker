@@ -1,7 +1,7 @@
 import type { Platform } from "@/types/platform";
 
 /** Platforms that the video-downloader supports beyond the comment-picker set. */
-export type VideoDownloadPlatform = Platform | "vimeo" | "direct";
+export type VideoDownloadPlatform = Platform | "vimeo" | "direct" | "webpage";
 
 export type DownloadFormatKind = "video" | "audio";
 

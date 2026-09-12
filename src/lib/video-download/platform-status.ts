@@ -18,13 +18,15 @@ export interface VideoDownloadStatusInfo {
  * (Aug 2026) — see the plan this shipped under for sources. Never derived
  * from credential presence; see the same rationale in platform-status.ts.
  *
- * YouTube is the deliberate exception to "official APIs only": YouTube's
- * Data API has no video-file-download endpoint for third-party videos, full
- * stop, so there is no official path to build this feature against. Support
- * here is implemented by parsing YouTube's public player response (the same
- * unofficial technique tools like yt-dlp use), which YouTube's Terms of
- * Service prohibit and can break without notice whenever YouTube changes
- * that response. See src/integrations/youtube/video.ts.
+ * YouTube: investigated and confirmed not viable (2026-09-12). YouTube's
+ * Data API has no video-file-download endpoint for third-party videos. The
+ * unofficial path (youtubei.js parsing the player response) can decipher the
+ * signature cipher with a custom JS sandbox, but the resulting CDN URL is
+ * then rejected with 403 by YouTube's separate PoToken/BotGuard anti-bot
+ * check at the actual file request — confirmed with a real deciphered URL,
+ * correct headers, and matching IP. Bypassing that means emulating YouTube's
+ * bot-detection challenge, which is out of scope. See
+ * src/integrations/youtube/video.ts.
  */
 export const VIDEO_DOWNLOAD_STATUS: Record<VideoDownloadPlatform, VideoDownloadStatusInfo> = {
   reddit: {
@@ -40,10 +42,10 @@ export const VIDEO_DOWNLOAD_STATUS: Record<VideoDownloadPlatform, VideoDownloadS
       "Instagram's Graph API only returns a downloadable media URL for video owned by the connected professional account — there is no public/anonymous video-download endpoint.",
   },
   youtube: {
-    status: "available",
-    label: "Available (unofficial, unreliable)",
+    status: "coming-soon",
+    label: "Not supported",
     description:
-      "Downloads by parsing YouTube's public player response — the same unofficial technique tools like yt-dlp use, since YouTube's official Data API has no video-download endpoint for third-party videos. This violates YouTube's Terms of Service, and as of this build it frequently fails outright (YouTube's current signature cipher isn't fully solved by the extraction library) — it may work for some videos and not others, with no fix possible on our side beyond waiting for an upstream library update. Only download videos you have the right to download.",
+      "YouTube's official Data API has no video-download endpoint for third-party videos. The unofficial workaround (deciphering YouTube's signature cipher) is solvable, but the resulting URL is then blocked by a separate YouTube anti-bot check (PoToken/BotGuard) before the file is ever served — bypassing that would mean emulating YouTube's bot-detection challenge, which we don't do.",
   },
   tiktok: {
     status: "coming-soon",
@@ -83,5 +85,11 @@ export const VIDEO_DOWNLOAD_STATUS: Record<VideoDownloadPlatform, VideoDownloadS
     label: "Available",
     description:
       "Paste any public HTTPS direct video link (.mp4, .webm, .mov …) and we'll proxy it through a secure download — no third-party platform needed.",
+  },
+  webpage: {
+    status: "available",
+    label: "Available",
+    description:
+      "Paste any public webpage URL and we'll extract the video from its Open Graph metadata, JSON-LD structured data, or <video> tags. Works for most news sites and video-sharing pages that publish their video URL in the page source.",
   },
 };

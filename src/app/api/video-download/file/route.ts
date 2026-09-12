@@ -22,7 +22,10 @@ const TRUSTED_CDN_HOSTS = new Set([
 const RATE_LIMIT = 30;
 const RATE_WINDOW_MS = 60_000;
 
-const VIDEO_CONTENT_TYPES = ["video/", "audio/", "application/octet-stream"];
+// "video-download" file proxy also relays thumbnail images (same trust
+// model: HTTPS, non-private host, content-type validated) rather than a
+// second near-duplicate endpoint just for images.
+const ALLOWED_CONTENT_TYPES = ["video/", "audio/", "image/", "application/octet-stream"];
 
 function isPrivateHost(hostname: string): boolean {
   if (hostname === "localhost" || hostname === "::1") return true;
@@ -90,9 +93,9 @@ export async function GET(req: NextRequest) {
         throw new ApiError("not-found", "That file couldn't be downloaded.");
       }
 
-      const isVideo = VIDEO_CONTENT_TYPES.some((t) => headContentType.startsWith(t));
-      if (!isVideo) {
-        throw new ApiError("invalid-request", "That URL doesn't point to a video or audio file.");
+      const isAllowed = ALLOWED_CONTENT_TYPES.some((t) => headContentType.startsWith(t));
+      if (!isAllowed) {
+        throw new ApiError("invalid-request", "That URL doesn't point to a video, audio, or image file.");
       }
     }
 

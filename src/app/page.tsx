@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Filter, Share2, ShieldCheck, Sparkles } from "lucide-react";
-import { UrlInput } from "@/components/home/url-input";
+import { HeroCarousel } from "@/components/home/hero-carousel";
 import { PlatformStatusBadge } from "@/components/home/platform-status-badge";
 import { PlatformIcon } from "@/components/ui/platform-icon";
 import { ToolCard } from "@/components/ui/tool-card";
@@ -21,20 +21,7 @@ export default function HomePage() {
   return (
     <main id="main-content">
       <section className="mx-auto flex max-w-4xl flex-col items-center gap-8 px-4 pb-16 pt-20 text-center sm:px-6 sm:pt-28">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent-foreground">
-          <Sparkles className="h-3.5 w-3.5" /> Your social media toolbox
-        </span>
-        <h1 className="text-balance text-5xl font-bold tracking-tight sm:text-6xl">
-          Everything creators need,
-          <br />
-          in one place.
-        </h1>
-        <p className="max-w-xl text-balance text-lg text-muted-foreground">
-          Pick winners, work with thumbnails, prepare media, clean URLs and more — all from one fast
-          toolkit. Start with the flagship: a fair, cryptographically verifiable comment picker.
-        </p>
-
-        <UrlInput />
+        <HeroCarousel />
 
         <div className="flex flex-wrap items-center justify-center gap-3">
           <Button asChild variant="outline" size="sm">

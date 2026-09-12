@@ -3,18 +3,16 @@
 // be fetched same-origin at runtime -- required by the CSP's connect-src
 // 'self' and avoids ever committing a ~32MB binary into git history. Runs
 // automatically via the "postinstall" script, both locally and on Vercel.
+//
+// (qr-scanner's worker does NOT need this treatment: it loads its worker via
+// a plain relative `import("./qr-scanner-worker.min.js")`, which Turbopack
+// code-splits and serves automatically -- unlike @ffmpeg/ffmpeg's worker,
+// which uses `new Worker(new URL(...))`, a pattern Turbopack mis-bundles.)
 import { copyFileSync, mkdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const root = path.dirname(fileURLToPath(import.meta.url)) + "/..";
-// The ESM build, not UMD: @ffmpeg/ffmpeg's worker is created with
-// `{ type: "module" }`, so it always loads the core via a dynamic
-// `import()` (importScripts() isn't available in module workers, and its
-// UMD/ESM auto-swap fallback only triggers for the package's own default
-// unpkg URL, not a self-hosted one like ours) -- importing the UMD build
-// fails with an opaque "TypeError: Failed to fetch" since it isn't a
-// valid ES module.
 const src = path.join(root, "node_modules/@ffmpeg/core/dist/esm");
 const dest = path.join(root, "public/ffmpeg");
 

@@ -14,11 +14,14 @@ import {
   AlertCircle,
   FileVideo,
 } from "lucide-react";
+import { SiVimeo } from "react-icons/si";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ToolCard } from "@/components/ui/tool-card";
+import { PlatformIcon } from "@/components/ui/platform-icon";
 import { apiFetch, ClientApiError } from "@/lib/api-client";
 import { downloadHref, muxFormat } from "@/lib/video-download/mux";
+import { detectVideoPlatform } from "@/lib/video-download/client-detect";
 import type { DownloadFormat, VideoDownloadInfo, VideoDownloadPlatform } from "@/lib/video-download/types";
 import { VIDEO_DOWNLOAD_STATUS } from "@/lib/video-download/platform-status";
 import { formatTimestamp } from "@/lib/video/frame";
@@ -30,24 +33,44 @@ const related = getRelatedTools("video-downloader");
 
 // Platforms shown in the status grid, in display order.
 // Vimeo and direct are always shown; social platforms shown with their honest status.
-const GRID_PLATFORMS: { id: VideoDownloadPlatform; label: string; monogram: string; color: string }[] = [
-  { id: "reddit",    label: "Reddit",       monogram: "R",  color: "#FF4500" },
-  { id: "vimeo",     label: "Vimeo",        monogram: "V",  color: "#1AB7EA" },
-  { id: "direct",    label: "Direct link",  monogram: "↓",  color: "#6366f1" },
-  { id: "youtube",   label: "YouTube",      monogram: "YT", color: "#FF0000" },
-  { id: "instagram", label: "Instagram",    monogram: "IG", color: "#C13584" },
-  { id: "tiktok",    label: "TikTok",       monogram: "TT", color: "#000000" },
-  { id: "x",         label: "X",            monogram: "X",  color: "#000000" },
-  { id: "facebook",  label: "Facebook",     monogram: "f",  color: "#1877F2" },
+const GRID_PLATFORMS: { id: VideoDownloadPlatform; label: string; color: string }[] = [
+  { id: "reddit",    label: "Reddit",       color: "#FF4500" },
+  { id: "vimeo",     label: "Vimeo",        color: "#1AB7EA" },
+  { id: "direct",    label: "Direct link",  color: "#6366f1" },
+  { id: "youtube",   label: "YouTube",      color: "#FF0000" },
+  { id: "instagram", label: "Instagram",    color: "#C13584" },
+  { id: "tiktok",    label: "TikTok",       color: "#000000" },
+  { id: "x",         label: "X",            color: "#000000" },
+  { id: "facebook",  label: "Facebook",     color: "#1877F2" },
 ];
 
-const DIRECT_VIDEO_EXTENSIONS = new Set(["mp4", "webm", "mov", "avi", "mkv", "m4v", "ogv", "m4v"]);
-const VIMEO_RE = /^https?:\/\/(?:(?:www\.|player\.)?vimeo\.com)\//;
-
-interface DetectResponse {
-  platform: string;
-  resourceId?: string;
-  message?: string;
+/** Real logos where we have one; PlatformIcon covers the comment-picker
+ * platform set, Vimeo gets its own real logo here, and "direct link" is
+ * generic (there's no brand to show). */
+function GridPlatformIcon({ platform, color }: { platform: VideoDownloadPlatform; color: string }) {
+  if (platform === "vimeo") {
+    return (
+      <span
+        className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-white"
+        style={{ background: color }}
+        aria-hidden="true"
+      >
+        <SiVimeo className="h-[55%] w-[55%]" />
+      </span>
+    );
+  }
+  if (platform === "direct" || platform === "webpage") {
+    return (
+      <span
+        className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-white"
+        style={{ background: color }}
+        aria-hidden="true"
+      >
+        <Download className="h-[55%] w-[55%]" />
+      </span>
+    );
+  }
+  return <PlatformIcon platform={platform} className="h-7 w-7" />;
 }
 
 type FormatState = {
@@ -56,25 +79,6 @@ type FormatState = {
   blobUrl?: string;
   error?: string;
 };
-
-/** Detect Vimeo URLs client-side (skip the platform/detect endpoint). */
-function parseVimeoIdFromUrl(url: string): string | null {
-  if (!VIMEO_RE.test(url)) return null;
-  const match = /\/(\d+)(?:[/?#]|$)/.exec(new URL(url).pathname);
-  return match ? match[1] : null;
-}
-
-/** Detect direct video file URLs client-side. */
-function isDirectVideoUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url);
-    if (parsed.protocol !== "https:") return false;
-    const ext = parsed.pathname.split(".").pop()?.toLowerCase() ?? "";
-    return DIRECT_VIDEO_EXTENSIONS.has(ext);
-  } catch {
-    return false;
-  }
-}
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
@@ -99,35 +103,7 @@ export default function VideoDownloaderPage() {
     setLoading(true);
 
     try {
-      // Detect Vimeo or direct video URLs client-side — these bypass the social
-      // platform/detect endpoint which only knows about comment-picker platforms.
-      const vimeoId = parseVimeoIdFromUrl(raw);
-      const isDirect = !vimeoId && isDirectVideoUrl(raw);
-
-      let platform: string;
-      let resourceId: string;
-
-      if (vimeoId) {
-        platform = "vimeo";
-        resourceId = vimeoId;
-      } else if (isDirect) {
-        platform = "direct";
-        resourceId = raw;
-      } else {
-        // Social platform detection
-        const det = await apiFetch<DetectResponse>("/api/platform/detect", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: raw }),
-        });
-        if (det.platform === "unknown" || !det.resourceId) {
-          setNotice(det.message ?? "That doesn't look like a supported video URL.");
-          return;
-        }
-        platform = det.platform;
-        resourceId = det.resourceId;
-      }
-
+      const { platform, resourceId } = await detectVideoPlatform(raw, apiFetch);
       const result = await apiFetch<VideoDownloadInfo>(
         `/api/video-download/info?platform=${encodeURIComponent(platform)}&resourceId=${encodeURIComponent(resourceId)}`,
       );
@@ -204,8 +180,8 @@ export default function VideoDownloaderPage() {
       <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 pb-10 pt-8 text-center sm:px-6">
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">Video Downloader</h1>
         <p className="max-w-xl text-balance text-muted-foreground">
-          Download public video through official APIs — Reddit, Vimeo, or any direct video link. Only
-          real confirmed resolutions are shown. No scraping, no fake formats.
+          Paste any public video URL — Reddit, YouTube, Vimeo, a direct file, or any webpage that
+          embeds a video. Only real formats are shown; no fake resolutions.
         </p>
 
         <div className="mx-auto w-full max-w-2xl">
@@ -218,7 +194,7 @@ export default function VideoDownloaderPage() {
               <input
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                placeholder="Paste a Reddit, Vimeo, or direct video URL"
+                placeholder="Paste any video URL — YouTube, Reddit, Vimeo, or any website"
                 className="w-full bg-transparent text-base outline-none placeholder:text-muted-foreground"
                 aria-label="Video URL"
               />
@@ -347,7 +323,7 @@ function PlatformGrid() {
           return (
             <PlatformStatusCard
               key={p.id}
-              monogram={p.monogram}
+              platform={p.id}
               color={p.color}
               label={p.label}
               statusInfo={statusInfo}
@@ -360,12 +336,12 @@ function PlatformGrid() {
 }
 
 function PlatformStatusCard({
-  monogram,
+  platform,
   color,
   label,
   statusInfo,
 }: {
-  monogram: string;
+  platform: VideoDownloadPlatform;
   color: string;
   label: string;
   statusInfo: { status: string; label: string; description: string };
@@ -379,14 +355,7 @@ function PlatformStatusCard({
       title={statusInfo.description}
     >
       <div className="flex items-start justify-between gap-2">
-        {/* Monogram badge */}
-        <span
-          className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[0.6rem] font-bold leading-none text-white"
-          style={{ background: color }}
-          aria-hidden="true"
-        >
-          {monogram}
-        </span>
+        <GridPlatformIcon platform={platform} color={color} />
         {/* Status dot */}
         {isAvailable ? (
           <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />

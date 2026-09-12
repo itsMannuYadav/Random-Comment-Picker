@@ -33,11 +33,39 @@ export default function ExtensionPage() {
         <Card className="p-6">
           <h2 className="font-semibold">What it does</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            While you&rsquo;re on a supported YouTube, Reddit or Instagram page, the extension detects
-            it and offers one-click actions — &ldquo;Pick with MySocial&rdquo;, &ldquo;Get
-            Thumbnail&rdquo; (YouTube) and &ldquo;Analyze&rdquo; — that open the matching MySocial
-            tool pre-filled with that page&rsquo;s URL. It never reads comments itself or holds any
-            API credentials; it just opens a MySocial URL.
+            On a supported YouTube, Reddit or Instagram page, the extension detects it and runs
+            three tools natively — no redirect to the website:
+          </p>
+          <ul className="mt-3 flex flex-col gap-2 text-sm text-muted-foreground">
+            <li>
+              <strong className="text-foreground">Pick Winner</strong> — fetches comments and runs
+              the same signed, cryptographically verifiable draw as the website.
+            </li>
+            <li>
+              <strong className="text-foreground">Get Thumbnail</strong> — works for any platform now,
+              not just YouTube.
+            </li>
+            <li>
+              <strong className="text-foreground">Download Video</strong> — Reddit, Vimeo, Instagram,
+              direct links, and most other webpages.
+            </li>
+          </ul>
+          <p className="mt-3 text-sm text-muted-foreground">
+            It calls MySocial&rsquo;s own backend directly for these — never a third-party site — and
+            never holds an API secret itself; anything requiring one (Reddit, Vimeo) stays
+            server-side.
+          </p>
+        </Card>
+
+        <Card className="p-6">
+          <h2 className="font-semibold">YouTube video download works differently</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            YouTube has no official download endpoint, and its anti-bot check rejects requests that
+            aren&rsquo;t a real browser — so this can&rsquo;t be done server-side (see the website&rsquo;s
+            Video Downloader for why). Instead, while you watch a video, the extension observes the
+            stream URLs your own browser&rsquo;s player already requested and was legitimately served,
+            and offers those for download. A quality is only downloadable once you&rsquo;ve actually
+            played the video at (or near) it — that&rsquo;s a real constraint, not a bug.
           </p>
         </Card>
 

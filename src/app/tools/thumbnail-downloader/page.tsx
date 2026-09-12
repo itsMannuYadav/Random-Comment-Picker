@@ -9,21 +9,31 @@ import { Button } from "@/components/ui/button";
 import { ToolCard } from "@/components/ui/tool-card";
 import { parseYouTubeUrl } from "@/integrations/youtube/parser";
 import { apiFetch, ClientApiError } from "@/lib/api-client";
+import { detectVideoPlatform } from "@/lib/video-download/client-detect";
+import type { VideoDownloadInfo } from "@/lib/video-download/types";
 import { getRelatedTools } from "@/config/tools";
 import { CATEGORY_BY_ID } from "@/config/categories";
 
+/** One downloadable image, whatever platform it came from. */
 interface ThumbnailOption {
-  key: "default" | "medium" | "high" | "standard" | "maxres";
+  key: string;
   label: string;
   url: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
+  /** Same-origin download link that forces a real file save. */
+  downloadHref: string;
 }
 
 interface ThumbnailInfo {
-  videoId: string;
   title?: string;
   thumbnails: ThumbnailOption[];
+}
+
+interface YouTubeThumbnailApiResponse {
+  videoId: string;
+  title?: string;
+  thumbnails: { key: string; label: string; url: string; width: number; height: number }[];
 }
 
 function gcd(a: number, b: number): number {
@@ -54,20 +64,50 @@ function ThumbnailDownloaderPageInner() {
 
   function analyze(rawUrl: string) {
     setNotice(null);
-
-    const parsed = parseYouTubeUrl(rawUrl.trim());
-    if (!parsed) {
-      setNotice("Paste a YouTube video, Shorts, or youtu.be link.");
-      return;
-    }
+    const raw = rawUrl.trim();
+    if (!raw) return;
 
     startTransition(async () => {
       try {
-        const result = await apiFetch<ThumbnailInfo>(`/api/youtube/thumbnails?videoId=${parsed.videoId}`);
-        setInfo(result);
+        // YouTube gets every confirmed-available resolution via the
+        // dedicated endpoint; every other platform gets the single
+        // thumbnailUrl already returned by the video-download info lookup.
+        const ytParsed = parseYouTubeUrl(raw);
+        if (ytParsed) {
+          const result = await apiFetch<YouTubeThumbnailApiResponse>(`/api/youtube/thumbnails?videoId=${ytParsed.videoId}`);
+          setInfo({
+            title: result.title,
+            thumbnails: result.thumbnails.map((t) => ({
+              ...t,
+              downloadHref: `/api/youtube/thumbnail-file?videoId=${result.videoId}&key=${t.key}`,
+            })),
+          });
+          return;
+        }
+
+        const { platform, resourceId } = await detectVideoPlatform(raw, apiFetch);
+        const result = await apiFetch<VideoDownloadInfo>(
+          `/api/video-download/info?platform=${encodeURIComponent(platform)}&resourceId=${encodeURIComponent(resourceId)}`,
+        );
+        if (!result.thumbnailUrl) {
+          setInfo(null);
+          setNotice("No thumbnail was found for that URL.");
+          return;
+        }
+        setInfo({
+          title: result.title,
+          thumbnails: [
+            {
+              key: "thumbnail",
+              label: "Thumbnail",
+              url: result.thumbnailUrl,
+              downloadHref: `/api/video-download/file?url=${encodeURIComponent(result.thumbnailUrl)}`,
+            },
+          ],
+        });
       } catch (err) {
         setInfo(null);
-        setNotice(err instanceof ClientApiError ? err.message : "Something went wrong fetching that video's thumbnails.");
+        setNotice(err instanceof ClientApiError ? err.message : "Something went wrong fetching that thumbnail.");
       }
     });
   }
@@ -110,8 +150,8 @@ function ThumbnailDownloaderPageInner() {
       <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 pb-10 pt-8 text-center sm:px-6">
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">Thumbnail Downloader</h1>
         <p className="max-w-xl text-balance text-muted-foreground">
-          Download the highest available thumbnail from a YouTube video — every resolution actually
-          confirmed available for that video via the official API, nothing guessed.
+          Download the thumbnail from a YouTube video, Reddit post, Vimeo video, or any webpage —
+          YouTube shows every resolution actually confirmed available via the official API.
         </p>
 
         <div className="mx-auto w-full max-w-2xl">
@@ -124,9 +164,9 @@ function ThumbnailDownloaderPageInner() {
               <input
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                placeholder="Paste a YouTube video URL"
+                placeholder="Paste any video/post URL — YouTube, Reddit, Vimeo, or any website"
                 className="w-full bg-transparent text-base outline-none placeholder:text-muted-foreground"
-                aria-label="YouTube video URL"
+                aria-label="Video or post URL"
               />
               {value && (
                 <button type="button" onClick={() => setValue("")} aria-label="Clear" className="text-muted-foreground hover:text-foreground">
@@ -170,13 +210,15 @@ function ThumbnailDownloaderPageInner() {
                       </span>
                     )}
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    {thumb.width}×{thumb.height} · {aspectRatioLabel(thumb.width, thumb.height)} · JPG
-                  </p>
+                  {thumb.width && thumb.height && (
+                    <p className="text-sm text-muted-foreground">
+                      {thumb.width}×{thumb.height} · {aspectRatioLabel(thumb.width, thumb.height)}
+                    </p>
+                  )}
                 </div>
                 <div className="flex shrink-0 flex-wrap gap-2">
                   <a
-                    href={`/api/youtube/thumbnail-file?videoId=${info.videoId}&key=${thumb.key}`}
+                    href={thumb.downloadHref}
                     className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:brightness-105"
                   >
                     <Download className="h-3.5 w-3.5" /> Download

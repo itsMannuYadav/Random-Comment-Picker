@@ -3,6 +3,7 @@ import { Sparkles } from "lucide-react";
 import { appConfig } from "@/lib/env";
 import { Button } from "@/components/ui/button";
 import { CommandPaletteTrigger } from "@/components/command-palette/command-palette-trigger";
+import { MobileMenu } from "@/components/layout/mobile-menu";
 
 export function Header() {
   return (
@@ -35,6 +36,7 @@ export function Header() {
           <Button asChild size="sm" variant="secondary" className="shrink-0">
             <Link href="/extension">Get the extension</Link>
           </Button>
+          <MobileMenu />
         </div>
       </div>
     </header>

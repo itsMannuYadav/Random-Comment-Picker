@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getRedditVideoInfo } from "@/integrations/reddit";
 import { getInstagramVideoInfo } from "@/integrations/instagram/video";
-import { getVimeoVideoInfo, VimeoError } from "@/integrations/vimeo";
+import { getVimeoVideoInfo } from "@/integrations/vimeo";
 import { getYoutubeVideoInfo } from "@/integrations/youtube/video";
+import { getWebpageVideoInfo } from "@/lib/video-download/webpage-extractor";
 import { VIDEO_DOWNLOAD_STATUS } from "@/lib/video-download/platform-status";
 import { ApiError, apiErrorResponse } from "@/lib/api-error";
 import { checkRateLimit, getClientKey } from "@/core/rate-limit/limiter";
@@ -21,7 +22,7 @@ const SOCIAL_PLATFORMS = [
 ] as const;
 
 const querySchema = z.object({
-  platform: z.enum([...SOCIAL_PLATFORMS, "vimeo", "direct"]),
+  platform: z.enum([...SOCIAL_PLATFORMS, "vimeo", "direct", "webpage"]),
   resourceId: z.string().min(1).max(2048),
 });
 
@@ -63,23 +64,42 @@ async function getDirectVideoInfo(rawUrl: string): Promise<VideoDownloadInfo> {
 
   const ext = parsed.pathname.split(".").pop()?.toLowerCase() ?? "";
 
-  // Confirm it's actually a video via HEAD before committing to a download
+  // Confirm it's actually a video. Try HEAD first; fall back to a Range GET
+  // for servers that don't support HEAD (some CDNs return 404/405 on HEAD).
   let contentType = "";
   let sizeBytes: number | undefined;
   try {
-    const head = await fetch(rawUrl, { method: "HEAD", cache: "no-store" });
-    contentType = head.headers.get("content-type") ?? "";
-    const cl = head.headers.get("content-length");
-    if (cl) sizeBytes = parseInt(cl, 10);
-    if (!head.ok) throw new ApiError("not-found", "That URL returned an error — make sure the link is publicly accessible.");
+    let probe = await fetch(rawUrl, { method: "HEAD", cache: "no-store", redirect: "follow" });
+    if (!probe.ok) {
+      // Fall back to GET with Range: bytes=0-0 to avoid downloading the whole file
+      probe = await fetch(rawUrl, {
+        method: "GET",
+        headers: { Range: "bytes=0-0" },
+        cache: "no-store",
+        redirect: "follow",
+      });
+    }
+    contentType = probe.headers.get("content-type") ?? "";
+    const cl = probe.headers.get("content-length") ?? probe.headers.get("content-range")?.match(/\/(\d+)$/)?.[1];
+    if (cl) sizeBytes = parseInt(cl as string, 10);
+    if (!probe.ok && probe.status !== 206) {
+      throw new ApiError("not-found", "That URL returned an error — make sure the link is publicly accessible.");
+    }
   } catch (err) {
     if (err instanceof ApiError) throw err;
     throw new ApiError("not-found", "We couldn't reach that URL. Make sure it's public and HTTPS.");
   }
 
-  const isVideoByContentType = DIRECT_VIDEO_CONTENT_TYPES.some((t) => contentType.startsWith(t));
+  const isHtmlPage = contentType.includes("html") || contentType.includes("xml");
+  const isVideoByContentType = !isHtmlPage && DIRECT_VIDEO_CONTENT_TYPES.some((t) => contentType.startsWith(t));
   const isVideoByExtension = DIRECT_VIDEO_EXTENSIONS.has(ext);
 
+  if (isHtmlPage) {
+    throw new ApiError(
+      "invalid-request",
+      "That URL points to a webpage, not a video file. If it's a page with an embedded video, paste the URL without modifying it and we'll extract the video automatically.",
+    );
+  }
   if (!isVideoByContentType && !isVideoByExtension) {
     throw new ApiError(
       "invalid-request",
@@ -143,6 +163,8 @@ export async function GET(req: NextRequest) {
         return NextResponse.json(await getDirectVideoInfo(resourceId));
       case "instagram":
         return NextResponse.json(await getInstagramVideoInfo(resourceId, undefined));
+      case "webpage":
+        return NextResponse.json(await getWebpageVideoInfo(resourceId));
       default:
         throw new ApiError(
           "unsupported-platform",

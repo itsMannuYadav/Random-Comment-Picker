@@ -28,6 +28,7 @@ import {
   AlignLeft,
   Reply,
   QrCode,
+  ScanQrCode,
   Info,
   Download,
 } from "lucide-react";
@@ -372,6 +373,17 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     status: "available",
     popular: true,
     keywords: ["qr", "code", "generate"],
+  },
+  {
+    id: "qr-scanner",
+    name: "QR Scanner",
+    description: "Decode a QR code from an uploaded image or your camera.",
+    category: "utilities",
+    icon: ScanQrCode,
+    href: "/tools/qr-scanner",
+    status: "available",
+    popular: true,
+    keywords: ["qr", "code", "scan", "read", "decode"],
   },
   {
     id: "file-info",
