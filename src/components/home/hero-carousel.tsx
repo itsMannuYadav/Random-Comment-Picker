@@ -180,10 +180,14 @@ const SLIDES: HeroSlide[] = [
 export function HeroCarousel() {
   const [index, setIndex] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Paused only while the user is actually typing into a slide's input --
+  // auto-advance must not yank their in-progress input away.
+  const pausedRef = useRef(false);
 
   function resetTimer() {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
+      if (pausedRef.current) return;
       setIndex((i) => (i + 1) % SLIDES.length);
     }, AUTO_ADVANCE_MS);
   }
@@ -201,10 +205,23 @@ export function HeroCarousel() {
     resetTimer();
   }
 
+  function handleFocus() {
+    pausedRef.current = true;
+  }
+
+  /** Only resume once focus actually leaves the carousel entirely — not
+   * when it just moves between two elements inside it (e.g. tabbing from
+   * the input to its submit button). */
+  function handleBlur(e: React.FocusEvent<HTMLDivElement>) {
+    const next = e.relatedTarget as Node | null;
+    if (next && e.currentTarget.contains(next)) return;
+    pausedRef.current = false;
+  }
+
   const slide = SLIDES[index];
 
   return (
-    <div className="flex w-full flex-col items-center gap-8">
+    <div className="flex w-full flex-col items-center gap-8" onFocus={handleFocus} onBlur={handleBlur}>
       {/* key={slide.id} remounts this on every slide change, restarting the
           CSS animation — no manual opacity state/effect needed. */}
       <div key={slide.id} className="hero-slide-fade flex w-full flex-col items-center gap-8">
