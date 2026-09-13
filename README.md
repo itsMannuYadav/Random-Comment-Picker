@@ -307,7 +307,7 @@ Quick path after cloning:
 ```bash
 # 1. Confirm production URL in extension/utils/config.js
 # 2. Confirm no localhost in extension/manifest.json host_permissions
-# 3. Publish https://mycp.mannuyadav.me/privacy (required for submission)
+# 3. Deploy the website so /privacy, /terms, and /support are live
 # 4. Pack the upload zip
 npm run pack:extension
 # → dist/mysocial-edge-<version>.zip

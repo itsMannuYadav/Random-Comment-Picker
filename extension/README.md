@@ -176,6 +176,8 @@ Official docs (keep these open while submitting):
 3. Bump `version` in `manifest.json` if this is an update.
 4. Publish a live **privacy policy** at `https://mycp.mannuyadav.me/privacy`
    (required when the extension handles personal info / URLs / API traffic).
+   Also ship `/terms` and `/support` — see `src/app/privacy`, `src/app/terms`,
+   `src/app/support`. Deploy the website before Partner Center submission.
 5. Build the store zip (from the repo root):
 
 ```bash

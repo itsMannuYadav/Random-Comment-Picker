@@ -3,7 +3,7 @@
   "name": "MySocial — Social Media Toolbox",
   "short_name": "MySocial",
   "version": "0.4.0",
-  "description": "Pick winners, download video and thumbnails from YouTube, Reddit, Instagram, Vimeo and more, natively -- no need to leave the extension.",
+  "description": "Social toolbox: pick comment winners, grab thumbnails, and download public videos without leaving the page.",
   "action": {
     "default_popup": "popup/popup.html",
     "default_title": "MySocial"

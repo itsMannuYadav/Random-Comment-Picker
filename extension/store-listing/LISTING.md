@@ -8,7 +8,7 @@ Paste these into Partner Center. Store images live in this folder.
 |---|---|
 | Category | Productivity (or Social / Entertainment if Productivity is unavailable) |
 | Website | `https://mycp.mannuyadav.me` |
-| Support contact detail | Your support email **or** a support page URL |
+| Support contact detail | `https://mycp.mannuyadav.me/support` (or `hello@mannuyadav.me`) |
 | Mature content | Unchecked |
 
 ## Privacy — single purpose
@@ -39,7 +39,12 @@ Select **No, I am not using remote code.**
 https://mycp.mannuyadav.me/privacy
 ```
 
-Publish that page before submitting. Partner Center requires a live privacy policy if the extension handles personal information (comment authors, URLs, API traffic).
+Also useful:
+
+- Terms: `https://mycp.mannuyadav.me/terms`
+- Support: `https://mycp.mannuyadav.me/support`
+
+These pages ship with the website (`src/app/privacy`, `src/app/terms`, `src/app/support`). Deploy the site before submitting so the URLs resolve.
 
 ## Store listing — description
 
@@ -94,7 +99,7 @@ How to test:
 
 Backend dependency: https://mycp.mannuyadav.me must be online.
 Privacy policy: https://mycp.mannuyadav.me/privacy
-Support: replace-with-your-email@example.com
+Support: https://mycp.mannuyadav.me/support (hello@mannuyadav.me)
 ```
 
 ## Images in this folder
