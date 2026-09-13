@@ -14,7 +14,7 @@ Paste these into Partner Center. Store images live in this folder.
 ## Privacy — single purpose
 
 ```text
-MySocial helps content creators run giveaways and grab media from social pages they already have open. On supported YouTube, Reddit, Instagram, and similar pages, it can pick a random comment winner, download public video where supported, and save thumbnails — without leaving the browser.
+MySocial helps content creators run giveaways and grab media from social pages they already have open. On supported YouTube, Reddit, Instagram, and similar pages, it can pick a random comment winner, download public video where supported, and save thumbnails, all without leaving the browser.
 ```
 
 ## Privacy — remote code
@@ -32,6 +32,19 @@ Select **No, I am not using remote code.**
 | `offscreen` | Run local ffmpeg.wasm to mux video+audio streams into one file before download. |
 | Host: `*.youtube.com` / `*.googlevideo.com` | Operate on YouTube pages and media URLs the user’s own player already requested. |
 | Host: `mycp.mannuyadav.me` | Call MySocial APIs for comment fetch, fair draw, and non-YouTube video/thumbnail info. |
+
+## Privacy — data usage disclosure
+
+Check these boxes (must match `src/app/privacy/page.tsx` section 3, "Information we process"):
+
+| Checkbox | Check it? | Why |
+|---|---|---|
+| Website content | **Yes** | We fetch public comments (text) from YouTube/Reddit to run the draw — matches "text, images, sounds, videos, or hyperlinks." |
+| Location | **Yes** | Server logs capture IP address for security/operations — Microsoft's own example for this category is "region, IP address, GPS coordinates." |
+| Personally identifiable information | No | We only see public display names/handles, not real name/address/email/age/ID. |
+| Health / Financial / Authentication / Personal communications / Web history / User activity | No | Not collected. |
+
+Leave all three "I do not..." certification checkboxes checked — nothing here contradicts them (no selling data, no unrelated use, no lending/creditworthiness use).
 
 ## Privacy policy URL
 
