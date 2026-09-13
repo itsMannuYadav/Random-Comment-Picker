@@ -2,7 +2,7 @@
 // (non-module) script shared via popup.html's global scope, and this file is
 // an ES module service worker that can't load it the same way. Update BOTH
 // when the app migrates domains.
-const MYSOCIAL_APP_URL = "https://mycp.mannuyadav.me";
+const MYSOCIAL_APP_URL = "https://mysocial.mannuyadav.me";
 
 // Service worker (MV3). Owns three things:
 //  1. Per-tab video metadata, relayed from content/inject.js via

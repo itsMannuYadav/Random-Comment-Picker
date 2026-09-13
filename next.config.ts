@@ -48,6 +48,19 @@ const nextConfig: NextConfig = {
           { key: "Content-Security-Policy", value: CSP },
         ],
       },
+      // Allow the browser extension (chrome-extension:// / extension:// origin)
+      // to call API routes directly from extension pages. Host permissions in
+      // manifest.json should bypass CORS automatically, but Edge and some
+      // Chromium builds still enforce it for cross-domain redirects and certain
+      // preflight scenarios — explicit headers ensure it works everywhere.
+      {
+        source: "/api/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Access-Control-Allow-Methods", value: "GET, POST, OPTIONS" },
+          { key: "Access-Control-Allow-Headers", value: "Content-Type" },
+        ],
+      },
     ];
   },
 };

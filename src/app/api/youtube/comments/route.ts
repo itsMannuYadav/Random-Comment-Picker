@@ -32,6 +32,9 @@ export async function GET(req: NextRequest) {
     const page = await getYouTubeCommentsPage(videoId, pageToken, runningTotal);
     return NextResponse.json(page);
   } catch (error) {
+    if (!(error instanceof Error && "kind" in error)) {
+      console.error("[youtube/comments] Unexpected error:", error);
+    }
     return apiErrorResponse(error);
   }
 }

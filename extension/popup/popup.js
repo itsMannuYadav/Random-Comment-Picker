@@ -41,9 +41,12 @@ function buildYoutubeRows(state) {
   const rows = [];
 
   // Progressive formats YouTube didn't bother ciphering — instant, no need
-  // to have played the video at all.
+  // to have played the video at all. Filter to video/* MIME types only;
+  // audio-only tracks (audio/mp4) should never appear in formats[] but we
+  // guard here so a mislabeled stream isn't offered as "(with audio)".
   for (const f of state.meta?.formats ?? []) {
     if (!f.url) continue;
+    if (f.mimeType && !f.mimeType.startsWith("video/")) continue;
     rows.push({
       key: `p-${f.itag}`,
       label: `${f.qualityLabel || "Video"} (with audio)`,

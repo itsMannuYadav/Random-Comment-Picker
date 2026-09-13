@@ -53,6 +53,7 @@ export function apiErrorResponse(error: unknown): NextResponse {
     );
   }
 
+  console.error("[apiErrorResponse] Unhandled error type:", error);
   return NextResponse.json(
     { error: { code: "unknown" as ApiErrorCode, message: "Something went wrong. Please try again." } },
     { status: 500 }

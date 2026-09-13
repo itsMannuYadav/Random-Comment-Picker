@@ -30,7 +30,16 @@ async function youtubeFetch<T>(path: string, params: Record<string, string>): Pr
   for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
   url.searchParams.set("key", getApiKey());
 
-  const res = await fetch(url, { cache: "no-store" });
+  let res: Response;
+  try {
+    res = await fetch(url, { cache: "no-store" });
+  } catch {
+    throw new YouTubeApiError(
+      "Couldn't reach YouTube's API. Please try again in a moment.",
+      "unknown",
+      503,
+    );
+  }
 
   if (!res.ok) {
     let body: YouTubeApiErrorBody | null = null;
@@ -65,7 +74,24 @@ async function youtubeFetch<T>(path: string, params: Record<string, string>): Pr
     throw new YouTubeApiError(message, "unknown", res.status);
   }
 
-  return (await res.json()) as T;
+  let data: T;
+  try {
+    data = (await res.json()) as T;
+  } catch {
+    throw new YouTubeApiError(
+      "YouTube returned an unexpected response. Please try again.",
+      "unknown",
+      502,
+    );
+  }
+  if (data === null || data === undefined) {
+    throw new YouTubeApiError(
+      "YouTube returned an empty response. Please try again.",
+      "unknown",
+      502,
+    );
+  }
+  return data;
 }
 
 export async function fetchVideoResource(videoId: string): Promise<YouTubeVideoResource> {

@@ -27,7 +27,7 @@ function showProgress(label) {
 async function apiFetch(path, init) {
   const res = await fetch(`${MYSOCIAL_APP_URL}${path}`, init);
   const body = await res.json().catch(() => null);
-  if (!res.ok) throw new Error(body?.message || `Request failed (${res.status}).`);
+  if (!res.ok) throw new Error(body?.error?.message || body?.message || `Request failed (${res.status}).`);
   return body;
 }
 

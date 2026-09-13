@@ -17,6 +17,7 @@
   "host_permissions": [
     "*://*.youtube.com/*",
     "*://*.googlevideo.com/*",
+    "https://mysocial.mannuyadav.me/*",
     "https://mycp.mannuyadav.me/*"
   ],
   "background": {

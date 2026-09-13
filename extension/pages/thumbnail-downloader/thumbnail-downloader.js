@@ -56,7 +56,7 @@ async function findThumbnail(raw) {
     if (platform === "youtube") {
       const res = await fetch(`${MYSOCIAL_APP_URL}/api/youtube/thumbnails?videoId=${encodeURIComponent(resourceId)}`);
       const body = await res.json();
-      if (!res.ok) throw new Error(body?.message || "Couldn't fetch thumbnails.");
+      if (!res.ok) throw new Error(body?.error?.message || body?.message || "Couldn't fetch thumbnails.");
       renderThumbnails(
         body.title,
         body.thumbnails.map((t) => ({ label: t.label, url: t.url, width: t.width, height: t.height })),
@@ -68,7 +68,7 @@ async function findThumbnail(raw) {
       `${MYSOCIAL_APP_URL}/api/video-download/info?platform=${encodeURIComponent(platform)}&resourceId=${encodeURIComponent(resourceId)}`,
     );
     const body = await res.json();
-    if (!res.ok) throw new Error(body?.message || "Couldn't fetch that page.");
+    if (!res.ok) throw new Error(body?.error?.message || body?.message || "Couldn't fetch that page.");
     if (!body.thumbnailUrl) throw new Error("No thumbnail was found for this URL.");
     renderThumbnails(body.title, [{ label: "Thumbnail", url: body.thumbnailUrl }]);
   } catch (err) {
