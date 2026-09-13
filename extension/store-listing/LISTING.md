@@ -40,8 +40,8 @@ Check these boxes (must match `src/app/privacy/page.tsx` section 3, "Information
 | Checkbox | Check it? | Why |
 |---|---|---|
 | Website content | **Yes** | We fetch public comments (text) from YouTube/Reddit to run the draw — matches "text, images, sounds, videos, or hyperlinks." |
-| Location | **Yes** | Server logs capture IP address for security/operations — Microsoft's own example for this category is "region, IP address, GPS coordinates." |
 | Personally identifiable information | No | We only see public display names/handles, not real name/address/email/age/ID. |
+| Location | No | The extension never reads, stores, or uses IP/region/GPS data for any feature. Incidental IP addresses in server access logs (inherent to any HTTPS request, mentioned in the privacy policy as standard operational logging) aren't the same as collecting location data. |
 | Health / Financial / Authentication / Personal communications / Web history / User activity | No | Not collected. |
 
 Leave all three "I do not..." certification checkboxes checked — nothing here contradicts them (no selling data, no unrelated use, no lending/creditworthiness use).
