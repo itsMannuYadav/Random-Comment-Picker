@@ -286,15 +286,37 @@ Changing the domain requires updating these vars, the OAuth redirect URLs in eac
 
 ## Browser extension
 
-A Manifest V3 Chromium extension lives in `extension/`. When you're on a supported page (YouTube video, Reddit post), the popup shows the video or post details and a **"Open in MySocial"** button that takes you straight to the comment picker.
+A Manifest V3 Chromium extension lives in `extension/`. On supported pages it can pick comment winners, download thumbnails, and download video natively inside the extension (plus deep links into website-only tools).
 
-The extension **never contains API credentials**. It only opens MySocial URLs and calls safe public endpoints.
+The extension **never contains API credentials**. Secrets stay on the MySocial backend.
 
 ### Load the extension locally
 
 1. Open `chrome://extensions` (or `edge://extensions`).
 2. Enable **Developer mode**.
 3. Click **Load unpacked** and select the `extension/` folder.
+
+For a local backend, temporarily set `MYSOCIAL_APP_URL` in `extension/utils/config.js` to `http://localhost:3000` and add `"http://localhost:3000/*"` to `host_permissions` in `extension/manifest.json`. Remove both before any store pack.
+
+### Publish to Microsoft Edge Add-ons
+
+Full steps, Partner Center copy, and store images are documented in [`extension/README.md`](./extension/README.md) and [`extension/store-listing/`](./extension/store-listing/).
+
+Quick path after cloning:
+
+```bash
+# 1. Confirm production URL in extension/utils/config.js
+# 2. Confirm no localhost in extension/manifest.json host_permissions
+# 3. Publish https://mycp.mannuyadav.me/privacy (required for submission)
+# 4. Pack the upload zip
+npm run pack:extension
+# → dist/mysocial-edge-<version>.zip
+
+# Optional: regenerate Edge store images (needs Pillow)
+npm run prepare:edge-assets
+```
+
+Then in [Partner Center](https://partner.microsoft.com/dashboard/microsoftedge/overview): upload the zip, fill Properties / Privacy / Store listings using `extension/store-listing/LISTING.md`, and upload the PNGs from `extension/store-listing/`.
 
 ---
 
@@ -321,6 +343,10 @@ The extension **never contains API credentials**. It only opens MySocial URLs an
 │   │   └── env.server.ts      # Server-side credential checks
 │   └── types/                 # Shared TypeScript types
 ├── extension/                 # Chromium browser extension (MV3)
+│   └── store-listing/         # Edge Add-ons images + Partner Center copy
+├── scripts/
+│   ├── pack-extension.mjs     # Build dist/mysocial-edge-<version>.zip
+│   └── prepare-edge-store-assets.py
 ├── .env.example               # All supported env vars with comments
 └── planning doc.md            # Full product specification
 ```

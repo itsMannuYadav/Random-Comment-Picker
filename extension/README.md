@@ -122,6 +122,18 @@ a thumbnail from a plain, non-video webpage isn't currently supported.
 2. Enable **Developer mode**.
 3. **Load unpacked** → select this `extension/` folder.
 
+### Pointing at a local backend
+
+For day-to-day development against `npm run dev`:
+
+1. In `utils/config.js`, set `MYSOCIAL_APP_URL` to `http://localhost:3000`.
+2. In `manifest.json`, temporarily add `"http://localhost:3000/*"` to
+   `host_permissions`.
+3. Click **Reload** on the extension card in `edge://extensions`.
+
+**Remove both changes before packing for a store submission.** The pack
+script refuses to build a zip if `localhost` is still in `host_permissions`.
+
 ## Keeping the bundled ffmpeg.wasm in sync
 
 `offscreen/vendor/ffmpeg/` and `offscreen/vendor/core/` are plain copies of
@@ -146,3 +158,72 @@ scripts (not `type="module"`), sharing global scope by design — this is why
 the project's Next.js ESLint config excludes this folder.
 `offscreen/offscreen.js` is the one exception (`type="module"`), since it
 needs real ES module imports for the bundled ffmpeg.wasm build.
+
+---
+
+## Publish to Microsoft Edge Add-ons
+
+Official docs (keep these open while submitting):
+
+- [Publish a Microsoft Edge extension](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/publish-extension)
+- [Developer policies](https://learn.microsoft.com/en-us/legal/microsoft-edge/extensions/developer-policies)
+- Partner Center: [Edge overview](https://partner.microsoft.com/dashboard/microsoftedge/overview)
+
+### Checklist before you upload
+
+1. Confirm `utils/config.js` points at production (`https://mycp.mannuyadav.me`).
+2. Confirm `manifest.json` has **no** `localhost` host permission.
+3. Bump `version` in `manifest.json` if this is an update.
+4. Publish a live **privacy policy** at `https://mycp.mannuyadav.me/privacy`
+   (required when the extension handles personal info / URLs / API traffic).
+5. Build the store zip (from the repo root):
+
+```bash
+npm run pack:extension
+```
+
+This writes `dist/mysocial-edge-<version>.zip` with `manifest.json` at the
+**zip root** (required by Partner Center). It excludes `store-listing/` and
+this README from the package.
+
+### Store listing assets
+
+Partner Center uploads these **separately** from the zip. Ready-to-use files
+and paste-ready copy live in [`store-listing/`](./store-listing/):
+
+| File | Field | Size |
+|---|---|---|
+| `logo-300x300.png` | Extension logo (required) | 300×300 |
+| `promo-small-440x280.png` | Small promotional tile | 440×280 |
+| `promo-large-1400x560.png` | Large promotional tile | 1400×560 |
+| `screenshot-0N-*-1280x800.png` | Screenshots (up to 6) | 1280×800 |
+| `LISTING.md` | Category, privacy text, description, search terms, certification notes | — |
+
+To regenerate marketing images after replacing sources under Cursor’s assets
+folder, run (requires Pillow):
+
+```bash
+npm run prepare:edge-assets
+```
+
+### Partner Center flow (summary)
+
+1. **Packages** — upload `dist/mysocial-edge-<version>.zip`.
+2. **Availability** — Public + all markets (unless you need otherwise).
+3. **Properties** — category (Productivity), website, support email/URL,
+   mature content unchecked. See `store-listing/LISTING.md`.
+4. **Privacy** — single purpose, permission justifications, **No remote
+   code**, data disclosures, privacy policy URL.
+5. **Store listings** — description (≥250 chars), logo, screenshots, search
+   terms. Name/short description come from the manifest.
+6. **Publish** — paste certification notes from `LISTING.md`. Review can take
+   up to about seven business days.
+
+### Policy notes for reviewers / maintainers
+
+- Edge expects a **narrow single purpose**. Frame the product as creator
+  tools for social pages the user already has open.
+- Do not claim rights to download content the user isn’t allowed to save.
+  Unauthorized copyrighted-media download is a common rejection reason.
+- Keep disclosures accurate: permissions, data use, and listing text must
+  match what the package actually does.

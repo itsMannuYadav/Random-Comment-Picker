@@ -17,8 +17,7 @@
   "host_permissions": [
     "*://*.youtube.com/*",
     "*://*.googlevideo.com/*",
-    "https://mycp.mannuyadav.me/*",
-    "http://localhost:3000/*"
+    "https://mycp.mannuyadav.me/*"
   ],
   "background": {
     "service_worker": "background/background.js",

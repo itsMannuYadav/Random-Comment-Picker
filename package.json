@@ -9,7 +9,9 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "postinstall": "node scripts/copy-ffmpeg-core.mjs"
+    "postinstall": "node scripts/copy-ffmpeg-core.mjs",
+    "pack:extension": "node scripts/pack-extension.mjs",
+    "prepare:edge-assets": "python scripts/prepare-edge-store-assets.py"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.120.0",
