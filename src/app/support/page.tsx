@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LifeBuoy, Github, BookOpen, Shield } from "lucide-react";
+import { LifeBuoy, GitFork, BookOpen, Shield } from "lucide-react";
 import { LegalPage } from "@/components/layout/legal-page";
 import { Card } from "@/components/ui/card";
 import { appConfig } from "@/lib/env";
@@ -56,7 +56,7 @@ export default function SupportPage() {
         </Card>
         <Card className="flex flex-col gap-2 p-4">
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <Github className="h-4 w-4" />
+            <GitFork className="h-4 w-4" />
           </span>
           <p className="font-semibold text-foreground">Bugs &amp; feature requests</p>
           <p>
