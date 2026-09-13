@@ -8,7 +8,7 @@ export function Footer() {
         <p>
           © {new Date().getFullYear()} {appConfig.name}. Random. Simple. Fair. Built by Mannu Yadav.
         </p>
-        <div className="flex gap-6">
+        <div className="flex flex-wrap gap-6">
           <Link href="/about" className="hover:text-foreground">
             About
           </Link>
@@ -17,6 +17,15 @@ export function Footer() {
           </Link>
           <Link href="/extension" className="hover:text-foreground">
             Extension
+          </Link>
+          <Link href="/support" className="hover:text-foreground">
+            Support
+          </Link>
+          <Link href="/privacy" className="hover:text-foreground">
+            Privacy
+          </Link>
+          <Link href="/terms" className="hover:text-foreground">
+            Terms
           </Link>
         </div>
       </div>
