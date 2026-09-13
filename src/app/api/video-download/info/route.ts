@@ -83,7 +83,7 @@ async function getDirectVideoInfo(rawUrl: string): Promise<VideoDownloadInfo> {
     const cl = probe.headers.get("content-length") ?? probe.headers.get("content-range")?.match(/\/(\d+)$/)?.[1];
     if (cl) sizeBytes = parseInt(cl as string, 10);
     if (!probe.ok && probe.status !== 206) {
-      throw new ApiError("not-found", "That URL returned an error — make sure the link is publicly accessible.");
+      throw new ApiError("not-found", "That URL returned an error - make sure the link is publicly accessible.");
     }
   } catch (err) {
     if (err instanceof ApiError) throw err;

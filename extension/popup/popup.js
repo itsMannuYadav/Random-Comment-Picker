@@ -104,7 +104,7 @@ function renderYoutubeDownload(state) {
 
   const rows = buildYoutubeRows(state);
   if (rows.length === 0) {
-    return `<div class="yt-hint">No downloadable quality captured yet — play the video for a few seconds, then reopen this popup.</div>`;
+    return `<div class="yt-hint">No downloadable quality captured yet - play the video for a few seconds, then reopen this popup.</div>`;
   }
 
   return `

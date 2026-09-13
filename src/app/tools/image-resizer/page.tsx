@@ -139,7 +139,7 @@ export default function ImageResizerPage() {
       <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 pb-10 pt-8 text-center sm:px-6">
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">Image Resizer</h1>
         <p className="max-w-xl text-balance text-muted-foreground">
-          Resize to exact dimensions or a common social preset — processed entirely in your browser.
+          Resize to exact dimensions or a common social preset - processed entirely in your browser.
         </p>
       </section>
 

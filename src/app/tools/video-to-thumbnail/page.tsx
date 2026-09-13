@@ -115,7 +115,7 @@ export default function VideoToThumbnailPage() {
       <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 pb-10 pt-8 text-center sm:px-6">
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">Video → Thumbnail</h1>
         <p className="max-w-xl text-balance text-muted-foreground">
-          Grab a still frame from any point in a video you upload — processed entirely in your browser.
+          Grab a still frame from any point in a video you upload - processed entirely in your browser.
         </p>
       </section>
 

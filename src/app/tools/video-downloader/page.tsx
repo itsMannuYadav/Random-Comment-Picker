@@ -180,7 +180,7 @@ export default function VideoDownloaderPage() {
       <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 pb-10 pt-8 text-center sm:px-6">
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">Video Downloader</h1>
         <p className="max-w-xl text-balance text-muted-foreground">
-          Paste any public video URL — Reddit, YouTube, Vimeo, a direct file, or any webpage that
+          Paste any public video URL - Reddit, YouTube, Vimeo, a direct file, or any webpage that
           embeds a video. Only real formats are shown; no fake resolutions.
         </p>
 
@@ -194,7 +194,7 @@ export default function VideoDownloaderPage() {
               <input
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                placeholder="Paste any video URL — YouTube, Reddit, Vimeo, or any website"
+                placeholder="Paste any video URL - YouTube, Reddit, Vimeo, or any website"
                 className="w-full bg-transparent text-base outline-none placeholder:text-muted-foreground"
                 aria-label="Video URL"
               />

@@ -45,7 +45,7 @@ const ADAPTERS = {
         );
         all = all.concat(page.comments);
         pages += 1;
-        onProgress(`Fetching comments — page ${pages} (${all.length} so far)`);
+        onProgress(`Fetching comments - page ${pages} (${all.length} so far)`);
         pageToken = page.nextPageToken ?? undefined;
       } while (pageToken);
       return all;

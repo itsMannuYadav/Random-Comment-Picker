@@ -102,7 +102,7 @@ export default function ImageCompressorPage() {
       <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 pb-10 pt-8 text-center sm:px-6">
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">Image Compressor</h1>
         <p className="max-w-xl text-balance text-muted-foreground">
-          Shrink an image right in your browser. Nothing is uploaded — the file never leaves your device.
+          Shrink an image right in your browser. Nothing is uploaded - the file never leaves your device.
         </p>
       </section>
 
@@ -158,7 +158,7 @@ export default function ImageCompressorPage() {
                   className="mt-2 w-full accent-[var(--primary)] disabled:opacity-40"
                 />
                 {format === "image/png" && (
-                  <p className="mt-1 text-xs text-muted-foreground">PNG is lossless — quality doesn&rsquo;t apply.</p>
+                  <p className="mt-1 text-xs text-muted-foreground">PNG is lossless - quality doesn&rsquo;t apply.</p>
                 )}
               </div>
 

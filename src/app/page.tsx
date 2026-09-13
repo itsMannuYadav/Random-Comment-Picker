@@ -74,7 +74,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
           <h2 className="text-center text-2xl font-bold tracking-tight">Works with the platforms you use.</h2>
           <p className="mx-auto mt-2 max-w-md text-center text-sm text-muted-foreground">
-            Every integration uses the platform&rsquo;s official API — never scraping, never workarounds.
+            Every integration uses the platform&rsquo;s official API - never scraping, never workarounds.
           </p>
 
           <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -105,9 +105,9 @@ export default function HomePage() {
           <h2 className="text-center text-2xl font-bold tracking-tight">How it works</h2>
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-4">
             {[
-              { icon: Share2, title: "Paste", body: "Drop in a video or post URL — we detect the platform automatically." },
+              { icon: Share2, title: "Paste", body: "Drop in a video or post URL - we detect the platform automatically." },
               { icon: Filter, title: "Filter", body: "Require keywords, remove duplicates, one entry per person, and more." },
-              { icon: Sparkles, title: "Pick", body: "A cryptographically secure draw selects your winner — never Math.random()." },
+              { icon: Sparkles, title: "Pick", body: "A cryptographically secure draw selects your winner - never Math.random()." },
               { icon: ShieldCheck, title: "Share", body: "Every result gets a public, verifiable link you can post anywhere." },
             ].map((step, i) => (
               <div key={step.title} className="flex flex-col items-center gap-3 text-center">
@@ -130,7 +130,7 @@ export default function HomePage() {
           <h2 className="mt-4 text-2xl font-bold tracking-tight">Transparent random selection</h2>
           <p className="mt-3 text-muted-foreground">
             Every draw records a hash of the exact candidate pool it ran against and signs the result
-            cryptographically. Anyone with the result link can verify the draw wasn&rsquo;t tampered with —
+            cryptographically. Anyone with the result link can verify the draw wasn&rsquo;t tampered with -
             no trust required.
           </p>
         </div>

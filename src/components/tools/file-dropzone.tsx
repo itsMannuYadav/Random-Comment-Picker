@@ -27,7 +27,7 @@ export function FileDropzone({ onFile, accept, kind, maxSizeBytes, className }: 
       return;
     }
     if (file.size > maxSizeBytes) {
-      setError(`That file is too large — the limit is ${formatBytes(maxSizeBytes)}.`);
+      setError(`That file is too large - the limit is ${formatBytes(maxSizeBytes)}.`);
       return;
     }
     setError(null);

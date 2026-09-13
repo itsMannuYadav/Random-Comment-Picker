@@ -97,7 +97,7 @@ export default function VideoCompressorPage() {
       args.push("-c:a", "aac", "-movflags", "+faststart", "output.mp4");
 
       const code = await ffmpeg.exec(args);
-      if (code !== 0) throw new Error("Compression failed — try a lower quality setting or smaller file.");
+      if (code !== 0) throw new Error("Compression failed - try a lower quality setting or smaller file.");
 
       const data = await ffmpeg.readFile("output.mp4");
       const blob = new Blob([new Uint8Array(data as Uint8Array)], { type: "video/mp4" });
@@ -148,7 +148,7 @@ export default function VideoCompressorPage() {
       <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 pb-10 pt-8 text-center sm:px-6">
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">Video Compressor</h1>
         <p className="max-w-xl text-balance text-muted-foreground">
-          Reduce the file size of any video you upload — choose your quality target and an optional
+          Reduce the file size of any video you upload - choose your quality target and an optional
           resolution cap. Runs entirely in your browser via WebAssembly.
         </p>
       </section>
@@ -245,7 +245,7 @@ export default function VideoCompressorPage() {
                   })}
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Caps marked ↑ are above your source — they won&apos;t upscale.
+                  Caps marked ↑ are above your source - they won&apos;t upscale.
                 </p>
               </div>
 

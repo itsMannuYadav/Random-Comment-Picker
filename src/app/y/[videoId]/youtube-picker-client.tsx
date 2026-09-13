@@ -19,7 +19,7 @@ export function YouTubePickerClient({ videoId, resume }: { videoId: string; resu
         );
         all = all.concat(page.comments);
         pages += 1;
-        onProgress({ totalFetched: all.length, pagesLoaded: pages, label: `Fetching comments — page ${pages}` });
+        onProgress({ totalFetched: all.length, pagesLoaded: pages, label: `Fetching comments - page ${pages}` });
         pageToken = page.nextPageToken ?? undefined;
       } while (pageToken);
 

@@ -143,7 +143,7 @@ function SocialMetadataPageInner() {
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">Social Metadata</h1>
         <p className="max-w-xl text-balance text-muted-foreground">
           Paste a YouTube, Reddit or Instagram URL to instantly preview its title, author, thumbnail and
-          stats — no login required.
+          stats - no login required.
         </p>
 
         <form

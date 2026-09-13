@@ -52,7 +52,7 @@ export default async function CategoryPage({
       {tools.length === 0 ? (
         <div className="mx-auto mt-14 max-w-md text-center text-muted-foreground">
           <p className="text-3xl">✨</p>
-          <p className="mt-3">No tools in this category yet — check back soon.</p>
+          <p className="mt-3">No tools in this category yet - check back soon.</p>
         </div>
       ) : (
         <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

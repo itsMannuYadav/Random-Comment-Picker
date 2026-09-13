@@ -117,7 +117,7 @@ export default function QrScannerPage() {
       <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 pb-10 pt-8 text-center sm:px-6">
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">QR Scanner</h1>
         <p className="max-w-xl text-balance text-muted-foreground">
-          Decode a QR code from an uploaded image or your camera — processed entirely in your
+          Decode a QR code from an uploaded image or your camera - processed entirely in your
           browser, nothing ever uploaded to a server.
         </p>
 

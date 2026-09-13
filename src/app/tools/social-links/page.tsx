@@ -55,7 +55,7 @@ export default function SocialLinksPage() {
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">Social Link Generator</h1>
         <p className="max-w-xl text-balance text-muted-foreground">
           Enter a username to generate profile links across supported platforms. These are just
-          URL patterns — we don&rsquo;t check whether the account actually exists.
+          URL patterns - we don&rsquo;t check whether the account actually exists.
         </p>
 
         <div className="mx-auto w-full max-w-2xl">

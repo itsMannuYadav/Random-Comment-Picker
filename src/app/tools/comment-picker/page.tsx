@@ -14,13 +14,13 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Comment Picker",
   description:
-    "Pick random giveaway winners from YouTube, Reddit and Instagram comments — fair, filterable and cryptographically verifiable.",
+    "Pick random giveaway winners from YouTube, Reddit and Instagram comments - fair, filterable and cryptographically verifiable.",
 };
 
 const STEPS = [
-  { icon: Share2, title: "Paste", body: "Drop in a video or post URL — we detect the platform automatically." },
+  { icon: Share2, title: "Paste", body: "Drop in a video or post URL - we detect the platform automatically." },
   { icon: Filter, title: "Filter", body: "Require keywords, remove duplicates, one entry per person, and more." },
-  { icon: Sparkles, title: "Pick", body: "A cryptographically secure draw selects your winner — never Math.random()." },
+  { icon: Sparkles, title: "Pick", body: "A cryptographically secure draw selects your winner - never Math.random()." },
   { icon: ShieldCheck, title: "Share", body: "Every result gets a public, verifiable link you can post anywhere." },
 ];
 
@@ -36,7 +36,7 @@ const FAQ = [
   {
     question: "How do I know a result wasn't faked?",
     answer:
-      "Every draw produces a shareable /draw/[token] link. The entire result — winners, candidate pool hash and algorithm version — is signed with an HMAC secret and embedded in that token. Anyone who opens the link gets the signature re-verified on the spot, with no database lookup and no trust required.",
+      "Every draw produces a shareable /draw/[token] link. The entire result (winners, candidate pool hash and algorithm version) is signed with an HMAC secret and embedded in that token. Anyone who opens the link gets the signature re-verified on the spot, with no database lookup and no trust required.",
   },
   {
     question: "Do I need to create an account?",
@@ -46,12 +46,12 @@ const FAQ = [
   {
     question: "What happens to the comments you load?",
     answer:
-      "Comments are fetched live from the platform's official API for the draw and are not stored in a database — the only thing that persists is the signed result embedded in your draw's own share link.",
+      "Comments are fetched live from the platform's official API for the draw and are not stored in a database - the only thing that persists is the signed result embedded in your draw's own share link.",
   },
   {
     question: "Can I pick more than one winner, or re-roll?",
     answer:
-      "Yes — choose up to 10 winners per draw. After a draw completes, \"Pick another winner\" reruns the draw excluding everyone already selected, so you can top up a giveaway without picking the same person twice.",
+      "Yes - choose up to 10 winners per draw. After a draw completes, \"Pick another winner\" reruns the draw excluding everyone already selected, so you can top up a giveaway without picking the same person twice.",
   },
 ];
 
@@ -80,7 +80,7 @@ export default function CommentPickerToolPage() {
       <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 pb-14 pt-8 text-center sm:px-6">
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">Comment Picker</h1>
         <p className="max-w-xl text-balance text-muted-foreground">
-          {tool?.description ?? "Pick random giveaway winners from your comments — fair and verifiable."}
+          {tool?.description ?? "Pick random giveaway winners from your comments - fair and verifiable."}
         </p>
 
         <UrlInput showPlatformChips={false} />

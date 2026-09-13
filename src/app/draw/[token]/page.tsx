@@ -71,7 +71,7 @@ export default async function DrawResultPage({ params }: PageProps) {
 
           <div className="flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2 text-sm text-success">
             <ShieldCheck className="h-4 w-4 shrink-0" />
-            Cryptographically verified — this result&rsquo;s signature was checked when this page loaded.
+            Cryptographically verified - this result&rsquo;s signature was checked when this page loaded.
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4 text-xs text-muted-foreground">

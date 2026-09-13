@@ -20,14 +20,14 @@ const FORMATS = [
   {
     ext: "mp4",
     label: "MP4",
-    description: "H.264 video + AAC audio — plays everywhere",
+    description: "H.264 video + AAC audio - plays everywhere",
     args: (input: string) => ["-i", input, "-c:v", "libx264", "-preset", "fast", "-crf", "23", "-c:a", "aac", "-movflags", "+faststart", "output.mp4"],
     mime: "video/mp4",
   },
   {
     ext: "webm",
     label: "WebM",
-    description: "VP9 video + Opus audio — optimised for web",
+    description: "VP9 video + Opus audio - optimised for web",
     args: (input: string) => ["-i", input, "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "33", "-c:a", "libopus", "output.webm"],
     mime: "video/webm",
   },
@@ -76,7 +76,7 @@ export default function VideoConverterPage() {
 
       await ffmpeg.writeFile(inputName, await fetchFile(file));
       const code = await ffmpeg.exec(fmt.args(inputName));
-      if (code !== 0) throw new Error("Conversion failed — try a different file or format.");
+      if (code !== 0) throw new Error("Conversion failed - try a different file or format.");
 
       const data = await ffmpeg.readFile(outputName);
       const blob = new Blob([new Uint8Array(data as Uint8Array)], { type: fmt.mime });
@@ -129,7 +129,7 @@ export default function VideoConverterPage() {
       <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 pb-10 pt-8 text-center sm:px-6">
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">Video Converter</h1>
         <p className="max-w-xl text-balance text-muted-foreground">
-          Convert between MP4 and WebM, processed entirely in your browser via WebAssembly — nothing
+          Convert between MP4 and WebM, processed entirely in your browser via WebAssembly - nothing
           is uploaded to a server.
         </p>
       </section>

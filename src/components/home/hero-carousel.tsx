@@ -98,7 +98,7 @@ const SLIDES: HeroSlide[] = [
       </>
     ),
     description:
-      "Pick winners, work with thumbnails, prepare media, clean URLs and more — all from one fast toolkit. Start with the flagship: a fair, cryptographically verifiable comment picker.",
+      "Pick winners, work with thumbnails, prepare media, clean URLs and more - all from one fast toolkit. Start with the flagship: a fair, cryptographically verifiable comment picker.",
     content: <UrlInput />,
   },
   {
@@ -112,10 +112,10 @@ const SLIDES: HeroSlide[] = [
       </>
     ),
     description:
-      "Download the thumbnail from a YouTube video, Reddit post, Vimeo video, or any webpage — YouTube shows every resolution actually confirmed available.",
+      "Download the thumbnail from a YouTube video, Reddit post, Vimeo video, or any webpage - YouTube shows every resolution actually confirmed available.",
     content: (
       <NavigateForm
-        placeholder="Paste any video/post URL — YouTube, Reddit, Vimeo, or any website"
+        placeholder="Paste any video/post URL - YouTube, Reddit, Vimeo, or any website"
         buttonLabel="Get Thumbnail"
         buildHref={(value) => `/tools/thumbnail-downloader?url=${encodeURIComponent(value)}`}
       />
@@ -132,10 +132,10 @@ const SLIDES: HeroSlide[] = [
       </>
     ),
     description:
-      "Paste any public video URL — Reddit, Vimeo, a direct file, or any webpage that embeds a video. Only real formats are shown, never fake resolutions.",
+      "Paste any public video URL - Reddit, Vimeo, a direct file, or any webpage that embeds a video. Only real formats are shown, never fake resolutions.",
     content: (
       <NavigateForm
-        placeholder="Paste any video URL — YouTube, Reddit, Vimeo, or any website"
+        placeholder="Paste any video URL - YouTube, Reddit, Vimeo, or any website"
         buttonLabel="Download Video"
         buildHref={(value) => `/tools/video-downloader?url=${encodeURIComponent(value)}`}
       />
@@ -151,7 +151,7 @@ const SLIDES: HeroSlide[] = [
       </>
     ),
     description:
-      "Generate a QR code for a link, video, or any text — processed entirely in your browser, nothing ever uploaded.",
+      "Generate a QR code for a link, video, or any text - processed entirely in your browser, nothing ever uploaded.",
     content: (
       <NavigateForm
         placeholder="Paste a URL or type any text"
@@ -172,7 +172,7 @@ const SLIDES: HeroSlide[] = [
       </>
     ),
     description:
-      "Pick comment winners, download video, and grab thumbnails right from the page you're browsing — YouTube, Reddit, Instagram and more. No copying links back here.",
+      "Pick comment winners, download video, and grab thumbnails right from the page you're browsing - YouTube, Reddit, Instagram and more. No copying links back here.",
     content: <ExtensionPromoContent />,
   },
 ];

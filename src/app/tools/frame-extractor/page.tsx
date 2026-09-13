@@ -73,7 +73,7 @@ export default function FrameExtractorPage() {
 
     const expectedCount = Math.min(MAX_FRAMES, Math.floor(meta.duration / interval));
     if (expectedCount === 0) {
-      setError(`The video is shorter than ${interval}s — try a shorter interval.`);
+      setError(`The video is shorter than ${interval}s - try a shorter interval.`);
       return;
     }
 
@@ -176,7 +176,7 @@ export default function FrameExtractorPage() {
       <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 pb-10 pt-8 text-center sm:px-6">
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">Frame Extractor</h1>
         <p className="max-w-xl text-balance text-muted-foreground">
-          Export PNG frames from a video at a chosen time interval — up to {MAX_FRAMES} frames, processed
+          Export PNG frames from a video at a chosen time interval - up to {MAX_FRAMES} frames, processed
           entirely in your browser via WebAssembly.
         </p>
       </section>

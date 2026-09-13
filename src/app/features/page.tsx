@@ -11,13 +11,13 @@ import { appConfig } from "@/lib/env";
 export const metadata: Metadata = {
   title: "Features",
   description:
-    "Everything MySocial can do, category by category — how each part of the toolkit actually works.",
+    "Everything MySocial can do, category by category - how each part of the toolkit actually works.",
 };
 
 const FLAGSHIP_FEATURES = [
-  "Real comments via YouTube, Reddit and Instagram's official APIs — never scraped",
+  "Real comments via YouTube, Reddit and Instagram's official APIs - never scraped",
   "Filters: keywords, hashtags, blocked words, date range, one entry per person, and more",
-  "Cryptographically secure randomness (Web Crypto API) — never Math.random()",
+  "Cryptographically secure randomness (Web Crypto API) - never Math.random()",
   "Every draw is HMAC-signed and independently verifiable at its own shareable link",
 ];
 
@@ -26,13 +26,13 @@ const FLAGSHIP_FEATURES = [
 // which only holds architecture right now) are skipped rather than shown
 // with nothing behind them.
 const CATEGORY_MECHANISM: Partial<Record<ToolCategoryId, string>> = {
-  engage: "Fetches through each platform's official API, then draws winners with cryptographically secure randomness — every result is independently verifiable.",
-  images: "Runs entirely in your browser via the Canvas API. Nothing is uploaded — your files never leave your device.",
-  video: "Processed client-side via WebAssembly (a real ffmpeg build compiled to run in the browser) and native video decoding — no upload, no server queue.",
+  engage: "Fetches through each platform's official API, then draws winners with cryptographically secure randomness - every result is independently verifiable.",
+  images: "Runs entirely in your browser via the Canvas API. Nothing is uploaded - your files never leave your device.",
+  video: "Processed client-side via WebAssembly (a real ffmpeg build compiled to run in the browser) and native video decoding - no upload, no server queue.",
   audio: "Converted and compressed client-side via WebAssembly; metadata is read straight from the file's own headers, never guessed from a resampled value.",
-  social: "Works from the URL you paste — no login, no scraping, using each platform's official API only where real data is actually needed.",
-  creator: "Real AI-generated text via a connected provider. If no provider is configured, the tool says so plainly — never a fake result.",
-  utilities: "Generated instantly, entirely client-side — no upload, no waiting.",
+  social: "Works from the URL you paste - no login, no scraping, using each platform's official API only where real data is actually needed.",
+  creator: "Real AI-generated text via a connected provider. If no provider is configured, the tool says so plainly - never a fake result.",
+  utilities: "Generated instantly, entirely client-side - no upload, no waiting.",
 };
 
 export default function FeaturesPage() {
@@ -48,7 +48,7 @@ export default function FeaturesPage() {
           Everything {appConfig.name} can do.
         </h1>
         <p className="max-w-xl text-balance text-muted-foreground">
-          Not a list of buttons — a look at how each part of the toolkit actually works, and why it can
+          Not a list of buttons - a look at how each part of the toolkit actually works, and why it can
           be trusted to do what it says.
         </p>
       </section>
@@ -137,7 +137,7 @@ export default function FeaturesPage() {
       <section className="border-t border-border/70 py-20 text-center">
         <h2 className="text-3xl font-bold tracking-tight">See it all in one place</h2>
         <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-          Search, filter and browse every tool — including what&rsquo;s coming next.
+          Search, filter and browse every tool - including what&rsquo;s coming next.
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <Button asChild size="lg">

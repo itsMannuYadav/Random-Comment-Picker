@@ -55,7 +55,7 @@ export default function UrlCleanerPage() {
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">URL Cleaner</h1>
         <p className="max-w-xl text-balance text-muted-foreground">
           Strip tracking parameters (utm_*, fbclid, gclid and more) from a URL. Only known
-          tracking params are removed — anything that could change what the link points to is
+          tracking params are removed - anything that could change what the link points to is
           left alone.
         </p>
 

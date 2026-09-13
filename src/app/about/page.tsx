@@ -10,7 +10,7 @@ import { appConfig } from "@/lib/env";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "MySocial is a social media creator toolkit — privacy-first media tools, real platform APIs, and a fair, cryptographically verifiable comment picker.",
+    "MySocial is a social media creator toolkit - privacy-first media tools, real platform APIs, and a fair, cryptographically verifiable comment picker.",
 };
 
 const PRINCIPLES = [
@@ -22,7 +22,7 @@ const PRINCIPLES = [
   {
     icon: PlugZap,
     title: "Real APIs, never scraping",
-    body: "Every platform integration — YouTube, Reddit, Instagram — goes through that platform's official, documented API. No workarounds, no reverse-engineered endpoints, no stolen cookies.",
+    body: "Every platform integration (YouTube, Reddit, Instagram) goes through that platform's official, documented API. No workarounds, no reverse-engineered endpoints, no stolen cookies.",
   },
   {
     icon: Eye,
@@ -32,7 +32,7 @@ const PRINCIPLES = [
   {
     icon: KeySquare,
     title: "Verifiable, not just trusted",
-    body: "The Comment Picker uses the Web Crypto API for randomness — never Math.random() — and every draw signs a hash of its exact candidate pool. Anyone can verify a result wasn't tampered with.",
+    body: "The Comment Picker uses the Web Crypto API for randomness (never Math.random()) and every draw signs a hash of its exact candidate pool. Anyone can verify a result wasn't tampered with.",
   },
 ];
 
@@ -52,8 +52,8 @@ export default function AboutPage() {
           One toolbox, not five open tabs.
         </h1>
         <p className="max-w-xl text-balance text-muted-foreground">
-          {appConfig.name} grew out of a single tool — a fair, transparent random comment picker for
-          giveaways — into a full creator toolkit. The comment picker is still the flagship; everything
+          {appConfig.name} grew out of a single tool, a fair, transparent random comment picker for
+          giveaways, into a full creator toolkit. The comment picker is still the flagship; everything
           else was built to the same bar: real, working, and honest about its own limits.
         </p>
 
@@ -95,7 +95,7 @@ export default function AboutPage() {
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
           <h2 className="text-center text-2xl font-bold tracking-tight">Explore by category</h2>
           <p className="mx-auto mt-2 max-w-lg text-center text-sm text-muted-foreground">
-            {openTools} of {totalTools} tools are open and working right now — the rest are clearly
+            {openTools} of {totalTools} tools are open and working right now - the rest are clearly
             marked coming soon.
           </p>
 
@@ -120,7 +120,7 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold tracking-tight">Built in the open, one tool at a time</h2>
           <p className="mt-3 text-muted-foreground">
             {appConfig.name} is under active development. New tools ship when they&rsquo;re genuinely
-            ready — not before. If a platform&rsquo;s official API doesn&rsquo;t support something yet,
+            ready - not before. If a platform&rsquo;s official API doesn&rsquo;t support something yet,
             you&rsquo;ll see &ldquo;Coming soon,&rdquo; never a button that quietly does nothing.
           </p>
           <p className="mt-6 text-sm text-muted-foreground">Built by Mannu Yadav.</p>

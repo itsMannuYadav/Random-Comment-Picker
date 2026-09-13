@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: `%s — ${appConfig.name}`,
   },
   description:
-    "Pick winners, work with thumbnails, prepare media, clean URLs and more — all from one fast creator toolkit. Starting with a fair, verifiable comment picker for YouTube, Reddit, Instagram and more.",
+    "Pick winners, work with thumbnails, prepare media, clean URLs and more - all from one fast creator toolkit. Starting with a fair, verifiable comment picker for YouTube, Reddit, Instagram and more.",
   authors: [{ name: "Mannu Yadav", url: appConfig.url }],
   creator: "Mannu Yadav",
   openGraph: {

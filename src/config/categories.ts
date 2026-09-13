@@ -47,7 +47,7 @@ export const TOOL_CATEGORIES: ToolCategoryDefinition[] = [
   {
     id: "video",
     label: "Video",
-    description: "Compress, convert and extract from video — thumbnails, GIFs and more.",
+    description: "Compress, convert and extract from video - thumbnails, GIFs and more.",
     icon: Video,
     href: "/tools/video",
   },
